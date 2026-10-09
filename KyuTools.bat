@@ -2,7 +2,7 @@
 setlocal EnableDelayedExpansion
 
 :: ============================================================
-::  KyuTools v1.0 - Windows Utility Toolkit
+::  KyuTools v1.1 - Windows Utility Toolkit
 ::  Main Launcher
 :: ============================================================
 
@@ -20,7 +20,7 @@ if %errorLevel% NEQ 0 (
 
 :: == Window setup ===========================================
 mode con: cols=100 lines=45
-title KyuTools v1.0 - Windows Utility Toolkit
+title KyuTools v1.1 - Windows Utility Toolkit
 color 0A
 
 :: ============================================================
@@ -38,7 +38,7 @@ echo                                   LOADING SECURITY PROTOCOL... OK
 echo.
 echo                   +---------------------------------------------------------+
 echo                   ^|                                                         ^|
-echo                   ^|                 K Y U T O O L S   v 1 . 0               ^|
+echo                   ^|                 K Y U T O O L S   v 1 . 1               ^|
 echo                   ^|                 -------------------------               ^|
 echo                   ^|                 AUTHORIZED PERSONNEL ONLY               ^|
 echo                   ^|                                                         ^|
@@ -66,7 +66,7 @@ color 0A
 echo.
 echo   +-------------------------------------------------------------------------------------------------+
 echo   ^|                                                                                                 ^|
-echo   ^|                           K Y U T O O L S   v 1 . 0                                           ^|
+echo   ^|                           K Y U T O O L S   v 1 . 1                                           ^|
 echo   ^|                        Windows Utility Toolkit by Kyu                                          ^|
 echo   ^|                                                                                                 ^|
 echo   +------------------------------------------------+------------------------------------------------+
@@ -82,7 +82,8 @@ echo   ^|   [8]   Printer and Device Sharing            ^|   Network printer, Fi
 echo   ^|   [9]   IT Helpdesk ^& Quick Fixes             ^|   BIOS boot, Explorer fix, Safe Mode, etc      ^|
 echo   ^|   [10]  Remote Management ^& Access            ^|   RDP, Quick Assist, Remote C$, Ping          ^|
 echo   ^|   [11]  Security and Intrusion Audit          ^|   Network connections, logon history, threats  ^|
-echo   ^|   [12]  About KyuTools                        ^|                                                ^|
+echo   ^|   [12]  Windows All in One Utilities          ^|   Chris Titus Tech WinUtil (Install/Tweaks)    ^|
+echo   ^|   [13]  About KyuTools                        ^|                                                ^|
 echo   ^|   [0]   Exit                                  ^|                                                ^|
 echo   ^|                                                ^|                                                ^|
 echo   +------------------------------------------------+------------------------------------------------+
@@ -101,7 +102,8 @@ if "%CHOICE%"=="8" goto LOAD_8
 if "%CHOICE%"=="9" goto LOAD_9
 if "%CHOICE%"=="10" goto LOAD_10
 if "%CHOICE%"=="11" goto LOAD_11
-if "%CHOICE%"=="12" goto ABOUT
+if "%CHOICE%"=="12" goto LOAD_12
+if "%CHOICE%"=="13" goto ABOUT
 if "%CHOICE%"=="0" goto BYE
 goto MAIN_MENU
 
@@ -160,6 +162,11 @@ call "%~dp0modules\security.bat"
 color 0A
 goto MAIN_MENU
 
+:LOAD_12
+call "%~dp0modules\allinone.bat"
+color 0A
+goto MAIN_MENU
+
 :ABOUT
 cls
 color 0A
@@ -168,8 +175,9 @@ echo   +------------------------------------------------------------------------
 echo   ^|                               About KyuTools                                                   ^|
 echo   +-------------------------------------------------------------------------------------------------+
 echo   ^|                                                                                                 ^|
-echo   ^|   KyuTools v1.0  -  Windows Utility Toolkit                                                   ^|
+echo   ^|   KyuTools v1.1  -  Windows Utility Toolkit                                                   ^|
 echo   ^|   A portable, password-protected, menu-driven CMD suite.                                       ^|
+echo   ^|   Created by Kyu  ^|  Contributor: themarneilx                                                 ^|
 echo   ^|                                                                                                 ^|
 echo   ^|   Modules:                                                                                     ^|
 echo   ^|     [1]  Windows Activation and License                                                       ^|
@@ -183,6 +191,7 @@ echo   ^|     [8]  Printer and Device Sharing                                   
 echo   ^|     [9]  IT Helpdesk ^& Quick Fixes                                                           ^|
 echo   ^|     [10] Remote Management ^& Access                                                         ^|
 echo   ^|     [11] Security and Intrusion Audit                                                         ^|
+echo   ^|     [12] Windows All in One Utilities                                                         ^|
 echo   ^|                                                                                                 ^|
 echo   +-------------------------------------------------------------------------------------------------+
 echo.
