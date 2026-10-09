@@ -205,8 +205,8 @@ IT-Stuffs/
 
 ## Authors & Contributors
 
-- **Creator & Lead Developer**: **Kyu** (Author of the original KyuTools toolkit)
-- **Contributor**: [**themarneilx**](https://github.com/themarneilx)
+- **Creator & Lead Developer**: [**Kyu**](https://github.com/mong-g) ([@mong-g](https://github.com/mong-g))
+- **Contributor**: [**themarneilx**](https://github.com/themarneilx) ([@themarneilx](https://github.com/themarneilx))
 
 ---
 

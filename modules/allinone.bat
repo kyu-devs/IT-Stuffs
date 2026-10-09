@@ -28,7 +28,7 @@ echo   ^|                           Windows All in One Utilities                
 echo   +------------------------------------------------------------------------------------------------+
 echo   ^|                                                                                                ^|
 echo   ^|   [1]   Launch Chris Titus Tech Windows Utility (WinUtil)                                      ^|
-echo   ^|   [0]   Back to Main Menu                                                                     ^|
+echo   ^|   [0]   Back to Main Menu                                                                      ^|
 echo   ^|                                                                                                ^|
 echo   +------------------------------------------------------------------------------------------------+
 echo.

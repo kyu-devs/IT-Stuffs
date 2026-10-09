@@ -66,25 +66,25 @@ color 0A
 echo.
 echo   +-------------------------------------------------------------------------------------------------+
 echo   ^|                                                                                                 ^|
-echo   ^|                           K Y U T O O L S   v 1 . 1                                           ^|
-echo   ^|                        Windows Utility Toolkit by Kyu                                          ^|
+echo   ^|                                    K Y U T O O L S   v 1 . 1                                    ^|
+echo   ^|                                 Windows Utility Toolkit by Kyu                                  ^|
 echo   ^|                                                                                                 ^|
 echo   +------------------------------------------------+------------------------------------------------+
 echo   ^|                                                ^|                                                ^|
-echo   ^|   [1]   Windows Activation and License         ^|   HWID/KMS activation, key entry, errors      ^|
+echo   ^|   [1]   Windows Activation and License         ^|   HWID/KMS activation, key entry, errors       ^|
 echo   ^|   [2]   Network and Internet Optimizer         ^|   DNS flush, reset, IP renew, DNS changer      ^|
-echo   ^|   [3]   System Maintenance and Diagnostics    ^|   SFC, DISM, cleanup, disk health, CHKDSK      ^|
-echo   ^|   [4]   System Information                    ^|   CPU, RAM, GPU, disk info, export report      ^|
-echo   ^|   [5]   Privacy and Telemetry Control         ^|   Disable tracking, Cortana, ad ID             ^|
-echo   ^|   [6]   Performance Tweaks                    ^|   Power plan, visual effects, game mode        ^|
-echo   ^|   [7]   File and Disk Utilities               ^|   Large files, ownership, hash checker         ^|
-echo   ^|   [8]   Printer and Device Sharing            ^|   Network printer, File sharing, Spooler       ^|
-echo   ^|   [9]   IT Helpdesk ^& Quick Fixes             ^|   BIOS boot, Explorer fix, Safe Mode, etc      ^|
-echo   ^|   [10]  Remote Management ^& Access            ^|   RDP, Quick Assist, Remote C$, Ping          ^|
-echo   ^|   [11]  Security and Intrusion Audit          ^|   Network connections, logon history, threats  ^|
-echo   ^|   [12]  Windows All in One Utilities          ^|   Chris Titus Tech WinUtil (Install/Tweaks)    ^|
-echo   ^|   [13]  About KyuTools                        ^|                                                ^|
-echo   ^|   [0]   Exit                                  ^|                                                ^|
+echo   ^|   [3]   System Maintenance and Diagnostics     ^|   SFC, DISM, cleanup, disk health, CHKDSK      ^|
+echo   ^|   [4]   System Information                     ^|   CPU, RAM, GPU, disk info, export report      ^|
+echo   ^|   [5]   Privacy and Telemetry Control          ^|   Disable tracking, Cortana, ad ID             ^|
+echo   ^|   [6]   Performance Tweaks                     ^|   Power plan, visual effects, game mode        ^|
+echo   ^|   [7]   File and Disk Utilities                ^|   Large files, ownership, hash checker         ^|
+echo   ^|   [8]   Printer and Device Sharing             ^|   Network printer, File sharing, Spooler       ^|
+echo   ^|   [9]   IT Helpdesk and Quick Fixes            ^|   BIOS boot, Explorer fix, Safe Mode, etc      ^|
+echo   ^|   [10]  Remote Management and Access           ^|   RDP, Quick Assist, Remote C$, Ping           ^|
+echo   ^|   [11]  Security and Intrusion Audit           ^|   Network connections, logon history, threats  ^|
+echo   ^|   [12]  Windows All in One Utilities           ^|   Chris Titus Tech WinUtil (Install/Tweaks)    ^|
+echo   ^|   [13]  About KyuTools                         ^|                                                ^|
+echo   ^|   [0]   Exit                                   ^|                                                ^|
 echo   ^|                                                ^|                                                ^|
 echo   +------------------------------------------------+------------------------------------------------+
 echo.
@@ -172,26 +172,26 @@ cls
 color 0A
 echo.
 echo   +-------------------------------------------------------------------------------------------------+
-echo   ^|                               About KyuTools                                                   ^|
+echo   ^|                                         About KyuTools                                          ^|
 echo   +-------------------------------------------------------------------------------------------------+
 echo   ^|                                                                                                 ^|
-echo   ^|   KyuTools v1.1  -  Windows Utility Toolkit                                                   ^|
-echo   ^|   A portable, password-protected, menu-driven CMD suite.                                       ^|
-echo   ^|   Created by Kyu  ^|  Contributor: themarneilx                                                 ^|
+echo   ^|   KyuTools v1.1  -  Windows Utility Toolkit                                                     ^|
+echo   ^|   A portable, password-protected, menu-driven CMD suite.                                        ^|
+echo   ^|   Created by Kyu (mong-g)  ^|  Contributor: themarneilx                                          ^|
 echo   ^|                                                                                                 ^|
-echo   ^|   Modules:                                                                                     ^|
-echo   ^|     [1]  Windows Activation and License                                                       ^|
-echo   ^|     [2]  Network and Internet Optimizer                                                        ^|
-echo   ^|     [3]  System Maintenance and Diagnostics                                                   ^|
-echo   ^|     [4]  System Information Viewer                                                            ^|
-echo   ^|     [5]  Privacy and Telemetry Control                                                        ^|
-echo   ^|     [6]  Performance Tweaks                                                                   ^|
-echo   ^|     [7]  File and Disk Utilities                                                              ^|
-echo   ^|     [8]  Printer and Device Sharing                                                           ^|
-echo   ^|     [9]  IT Helpdesk ^& Quick Fixes                                                           ^|
-echo   ^|     [10] Remote Management ^& Access                                                         ^|
-echo   ^|     [11] Security and Intrusion Audit                                                         ^|
-echo   ^|     [12] Windows All in One Utilities                                                         ^|
+echo   ^|   Modules:                                                                                      ^|
+echo   ^|     [1]  Windows Activation and License                                                         ^|
+echo   ^|     [2]  Network and Internet Optimizer                                                         ^|
+echo   ^|     [3]  System Maintenance and Diagnostics                                                     ^|
+echo   ^|     [4]  System Information Viewer                                                              ^|
+echo   ^|     [5]  Privacy and Telemetry Control                                                          ^|
+echo   ^|     [6]  Performance Tweaks                                                                     ^|
+echo   ^|     [7]  File and Disk Utilities                                                                ^|
+echo   ^|     [8]  Printer and Device Sharing                                                             ^|
+echo   ^|     [9]  IT Helpdesk and Quick Fixes                                                            ^|
+echo   ^|     [10] Remote Management and Access                                                           ^|
+echo   ^|     [11] Security and Intrusion Audit                                                           ^|
+echo   ^|     [12] Windows All in One Utilities                                                           ^|
 echo   ^|                                                                                                 ^|
 echo   +-------------------------------------------------------------------------------------------------+
 echo.
@@ -203,7 +203,7 @@ cls
 color 0A
 echo.
 echo   +-------------------------------------------------------------------------------------------------+
-echo   ^|                    Thank you for using KyuTools.  Goodbye!                                    ^|
+echo   ^|                    Thank you for using KyuTools.  Goodbye!                                      ^|
 echo   +-------------------------------------------------------------------------------------------------+
 echo.
 timeout /t 2 /nobreak >nul
