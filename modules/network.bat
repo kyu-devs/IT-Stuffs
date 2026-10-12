@@ -296,9 +296,9 @@ echo   +------------------------------------------------------------------------
 echo   ^|   Internet Speed Test                                                                         ^|
 echo   +------------------------------------------------------------------------------------------------+
 echo.
-echo   [*] Opening fast.com in your default browser...
-start https://fast.com
-echo   [+] Opened: fast.com
+echo   [*] Opening Speedtest by Ookla (speedtest.net) in your default browser...
+start https://www.speedtest.net
+echo   [+] Opened: speedtest.net
 echo.
 echo   [ Quick Connectivity Check ]
 ping -n 3 8.8.8.8 | findstr "time"

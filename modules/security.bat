@@ -16,7 +16,7 @@ echo   ^|                           Security and Intrusion Audit                
 echo   +------------------------------------------------------------------------------------------------+
 echo   ^|                                                                                                ^|
 echo   ^|   [1]   View Active Network Connections (Netstat)                                             ^|
-echo   ^|   [2]   Check Recent Successful Logons (Security Event 4624)                                  ^|
+echo   ^|   [2]   Logon ^& Intrusion Audit (Failed Attempts, Active Users, RDP ^& Shares)                 ^|
 echo   ^|   [3]   View Recently Modified Executables (Last 24 Hours)                                    ^|
 echo   ^|   [4]   View Connected USB Devices History                                                    ^|
 echo   ^|   [5]   Check Suspicious Startup Programs (Run Keys)                                          ^|
@@ -53,16 +53,7 @@ pause
 goto SEC_MENU
 
 :S_2
-cls
-echo.
-echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Recent Successful Logons (Event ID 4624)                                                    ^|
-echo   +------------------------------------------------------------------------------------------------+
-echo.
-echo   [*] Querying Security Event Log (Last 5 logons)...
-powershell -NoProfile -Command "Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4624} -MaxEvents 5 -ErrorAction SilentlyContinue | Format-List TimeCreated, Message"
-echo.
-pause
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0logon_audit.ps1"
 goto SEC_MENU
 
 :S_3

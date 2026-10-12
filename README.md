@@ -30,6 +30,7 @@ A modular, password-protected Command Prompt administrative and IT Helpdesk tool
   - [10. Remote Management & Access](#10-remote-management--access)
   - [11. Security and Intrusion Audit](#11-security-and-intrusion-audit)
   - [12. Windows All in One Utilities](#12-windows-all-in-one-utilities)
+  - [13. Account Recovery and Access Guide](#13-account-recovery-and-access-guide)
 - [Project Structure](#project-structure)
 - [Authors & Contributors](#authors--contributors)
 - [Disclaimer](#disclaimer)
@@ -93,7 +94,7 @@ Located in [`modules/network.bat`](modules/network.bat):
 - **DNS Speed Benchmark**: Measures round-trip ping latency across Google (8.8.8.8), Cloudflare (1.1.1.1), Quad9 (9.9.9.9), and OpenDNS (208.67.222.222).
 - **DNS Server Switcher**: Quickly applies DNS presets (Google, Cloudflare, Quad9, OpenDNS, or custom IPs) directly to the active network interface.
 - **Protocol Management**: Enable or disable IPv6 components and Teredo tunneling.
-- **Connection Viewer & Speed Check**: Lists active listening and established sockets (`netstat`) and launches Fast.com speed testing.
+- **Connection Viewer & Speed Check**: Lists active listening and established sockets (`netstat`) and launches Speedtest by Ookla (`speedtest.net`).
 
 ### 3. System Maintenance and Diagnostics
 Located in [`modules/maintenance.bat`](modules/maintenance.bat):
@@ -139,9 +140,11 @@ Located in [`modules/diskutils.bat`](modules/diskutils.bat):
 
 ### 8. Printer and Device Sharing
 Located in [`modules/printer.bat`](modules/printer.bat):
-- **Network Discovery & Sharing**: Opens Windows Firewall rules for Network Discovery and File & Printer Sharing.
-- **Printer Inventory & Sharing**: Queries installed printers via PowerShell `Get-Printer` and configures network share names.
-- **Print Spooler Reset**: Stops and restarts the Windows Print Spooler service (`spooler`) to clear stuck or unresponsive print queues.
+- **Enable File and Printer Sharing**: Sets network profile to Private, enables firewall rules, starts discovery services, disables password-protected sharing, and configures Windows 11 SMB guest policies.
+- **View Installed Printers & Drivers**: Lists all printers and installed driver architectures, with built-in utilities to launch the Windows Add Driver Wizard, purge corrupted Point & Print driver caches (`PCC`), or open the Print Server Properties GUI.
+- **Share an Installed Printer (Host PC)**: Shares a local printer with a custom share name and ensures guest/anonymous sharing permissions are configured.
+- **Connect to a Shared Printer (Client PCs)**: Automatically scans the network for open shared printers and WSD devices, runs driver pre-checks, connects without wasting paper on test prints, translates any connection or driver error into plain English, and includes an interactive Driver Repair Assistant.
+- **Restart Print Spooler Service**: Stops and restarts the Windows Print Spooler service (`spooler`) to clear stuck or unresponsive print queues.
 
 ### 9. IT Helpdesk & Quick Fixes
 Located in [`modules/ithelpdesk.bat`](modules/ithelpdesk.bat):
@@ -159,13 +162,19 @@ Located in [`modules/remote.bat`](modules/remote.bat):
 - **Remote Administration**: Opens remote Computer Management consoles (`compmgmt.msc /computer:\\<target>`), administrative hidden shares (`\\<target>\c$`), and the remote shutdown GUI (`shutdown -i`).
 
 ### 11. Security and Intrusion Audit
-Located in [`modules/security.bat`](modules/security.bat):
+Located in [`modules/security.bat`](modules/security.bat) and [`modules/logon_audit.ps1`](modules/logon_audit.ps1):
 - **Active Connections with Process IDs**: Runs `netstat -anob` to identify listening and established sockets mapped to owning processes.
-- **Logon Audit**: Queries the Windows Security event log for recent successful logon events (Event ID 4624).
-- **RDP Session Audit**: Queries the TerminalServices-LocalSessionManager log for incoming Remote Desktop connections (Event ID 1149).
+- **Logon & Intrusion Audit Dashboard**:
+  - Failed Logon Attempts (Event ID 4625): Detects unauthorized login tries, brute-force attempts, and wrong passwords with target username, calling IP, workstation, and plain-English failure reasons.
+  - Active Logged-In Sessions: Identifies who is currently on the PC (interactive console users via `quser`, remote SMB network share users via `net session`, and active connections on ports 3389/445).
+  - Recent User Logons (Event ID 4624): Filtered table displaying actual human and remote logins without internal Windows background clutter.
+  - Account Lockout Tracking (Event ID 4740): Tracks locked-out accounts and the originating device.
+  - Windows Audit Policy Manager: 1-click verification and enablement of failure/success auditing via `auditpol`.
+  - Real-Time Live Logon Monitor: Live watcher that alerts on incoming login attempts as they happen.
 - **Recent Executable Scan**: Scans `C:\Users` and `C:\ProgramData` for `.exe`, `.bat`, `.ps1`, and `.vbs` files created or modified in the last 24 hours.
 - **USB Device Connection History**: Queries the `USBSTOR` registry keys to inspect previously connected USB storage devices.
 - **Autostart Audit**: Checks `Run` keys in `HKLM` and `HKCU` for suspicious persistence entries.
+- **Remote Desktop (RDP) History**: Queries TerminalServices logs for remote desktop connections (Event ID 1149).
 - **Defender Threats**: Displays recent Windows Defender threat detections via `Get-MpThreatDetection`.
 
 ### 12. Windows All in One Utilities
@@ -175,6 +184,18 @@ Located in [`modules/allinone.bat`](modules/allinone.bat):
   ```powershell
   powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://christitus.com/win | iex"
   ```
+
+### 13. Account Recovery & Access Guide
+Located in [`modules/account_recovery.bat`](modules/account_recovery.bat):
+- **Diagnose Login Problems**: Multi-point diagnostic triage for forgotten passwords, PIN failures, account lockouts, profile errors, and boot failures.
+- **Microsoft Account Recovery**: Official recovery portals (`account.live.com/password/reset` and `acsr`), enterprise SSPR, and connectivity checks.
+- **Windows Hello PIN Recovery**: Hardware TPM and NGC cryptographic container diagnostics, sign-in options fallback, and convenience PIN policy checks.
+- **Local Account Recovery Guide**: Official Windows security questions, password reset disks, co-administrator recovery, and user account diagnostics via `net user`.
+- **Account Lockout Diagnostics**: Lockout thresholds, duration, observation window checks via `net accounts`, Security Event ID 4740 scanner, and safe authorized unlocking.
+- **BitLocker Recovery Assistant**: Read-only encryption status via `manage-bde`, cloud vault key locators, and WinPE recovery syntax.
+- **Offline Windows Installation Detection**: WinPE vs normal Windows environment detection, drive letter shifting compensation, and volume accessibility scanner.
+- **User Data Backup Assistant**: Non-destructive `robocopy` profile and library backup to external drives prior to OS repair.
+- **Windows Recovery Environment (WinRE) Guide**: `reagentc` status checker, advanced startup reboot launcher, and recovery utility guidance.
 
 ---
 
@@ -194,11 +215,14 @@ IT-Stuffs/
     ├── privacy.bat         # Telemetry, Cortana, and host blocking tools
     ├── performance.bat     # Power plans, RAM flush, and gaming optimizations
     ├── diskutils.bat       # Heavy file finder, ownership tools, and hash checker
-    ├── printer.bat         # Printer sharing and print spooler reset
+    ├── printer.bat         # Printer sharing, connection, and error fixes
+    ├── connect_printer.ps1 # Connect to shared printer and auto-repair engine
     ├── ithelpdesk.bat      # UEFI reboot, explorer fixes, GPO reset, Safe Mode
     ├── remote.bat          # RDP, hidden shares, subnet ARP scanner, remote MMC
-    ├── security.bat        # Logon audits, USB history, Defender threat inspection
-    └── allinone.bat        # Chris Titus Tech WinUtil launcher
+    ├── security.bat        # Security audit menu launcher
+    ├── logon_audit.ps1     # Failed login detector, active sessions, and live monitor
+    ├── allinone.bat        # Chris Titus Tech WinUtil launcher
+    └── account_recovery.bat# Login triage, BitLocker assistant, backup, and WinRE guide
 ```
 
 ---
