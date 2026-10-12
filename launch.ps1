@@ -16,7 +16,7 @@ Write-Host ""
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 # Target GitHub repository archive URL
-$RepoZip = "https://github.com/mong-g/IT-Stuffs/archive/refs/heads/main.zip"
+$RepoZip = "https://github.com/kyu-devs/IT-Stuffs/archive/refs/heads/main.zip"
 $TempDir = Join-Path $env:TEMP "KyuTools_Cloud"
 $ZipFile = Join-Path $env:TEMP "KyuTools.zip"
 
