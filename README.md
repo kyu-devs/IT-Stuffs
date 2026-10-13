@@ -31,6 +31,7 @@ A modular, password-protected Command Prompt administrative and IT Helpdesk tool
   - [11. Security and Intrusion Audit](#11-security-and-intrusion-audit)
   - [12. Windows All in One Utilities](#12-windows-all-in-one-utilities)
   - [13. Account Recovery and Access Guide](#13-account-recovery-and-access-guide)
+  - [14. Custom Problem Solver & Hardware Diagnostics](#14-custom-problem-solver--hardware-diagnostics)
 - [Project Structure](#project-structure)
 - [Authors & Contributors](#authors--contributors)
 - [Disclaimer](#disclaimer)
@@ -197,6 +198,14 @@ Located in [`modules/account_recovery.bat`](modules/account_recovery.bat):
 - **User Data Backup Assistant**: Non-destructive `robocopy` profile and library backup to external drives prior to OS repair.
 - **Windows Recovery Environment (WinRE) Guide**: `reagentc` status checker, advanced startup reboot launcher, and recovery utility guidance.
 
+### 14. Custom Problem Solver & Hardware Diagnostics
+Located in [`modules/troubleshoot.ps1`](modules/troubleshoot.ps1):
+- **Freeform Problem Matching**: State your problem in plain language (e.g., "monitor flickering", "pc slow", "no internet", "blue screen") to trigger tailored diagnostic and repair workflows.
+- **Interactive Stepwise Repairs**: Explains why each fix is recommended and asks before running each operation.
+- **Hardware Diagnostic Escalation**: When software repairs cannot solve the problem or when no software issue exists, automatically guides the technician through physical isolation checks.
+- **Physical Isolation Suite**: Dedicated hardware inspection routines for Monitor Flickering (OSD built-in menu test, cable inspection & swap, GPU port swapping, PCIe card reseating, and cross-testing on another PC), RAM faults, thermals/cooling, disk S.M.A.R.T. health, network cabling, and power delivery.
+- **Direct Hardware Menu**: Type `hw` or `hardware` directly from the problem prompt to inspect physical hardware checklists across all 11 categories without needing to run software steps first.
+
 ---
 
 ## Project Structure
@@ -222,7 +231,8 @@ IT-Stuffs/
     ├── security.bat        # Security audit menu launcher
     ├── logon_audit.ps1     # Failed login detector, active sessions, and live monitor
     ├── allinone.bat        # Chris Titus Tech WinUtil launcher
-    └── account_recovery.bat# Login triage, BitLocker assistant, backup, and WinRE guide
+    ├── account_recovery.bat# Login triage, BitLocker assistant, backup, and WinRE guide
+    └── troubleshoot.ps1    # Custom problem solver & hardware diagnostic escalation suite
 ```
 
 ---

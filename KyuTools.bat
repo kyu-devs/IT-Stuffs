@@ -84,7 +84,8 @@ echo   ^|   [10]  Remote Management and Access           ^|   RDP, Quick Assist,
 echo   ^|   [11]  Security and Intrusion Audit           ^|   Network connections, logon history, threats  ^|
 echo   ^|   [12]  Windows All in One Utilities           ^|   Chris Titus Tech WinUtil (Install/Tweaks)    ^|
 echo   ^|   [13]  Account Recovery and Access Guide      ^|   Diagnose login, BitLocker, WinRE, backup     ^|
-echo   ^|   [14]  About KyuTools                         ^|                                                ^|
+echo   ^|   [14]  Custom Problem Solver                  ^|   Describe a problem, get step-by-step fixes   ^|
+echo   ^|   [15]  About KyuTools                         ^|                                                ^|
 echo   ^|   [0]   Exit                                   ^|                                                ^|
 echo   ^|                                                ^|                                                ^|
 echo   +------------------------------------------------+------------------------------------------------+
@@ -105,7 +106,8 @@ if "%CHOICE%"=="10" goto LOAD_10
 if "%CHOICE%"=="11" goto LOAD_11
 if "%CHOICE%"=="12" goto LOAD_12
 if "%CHOICE%"=="13" goto LOAD_13
-if "%CHOICE%"=="14" goto ABOUT
+if "%CHOICE%"=="14" goto LOAD_14
+if "%CHOICE%"=="15" goto ABOUT
 if "%CHOICE%"=="0" goto BYE
 goto MAIN_MENU
 
@@ -174,6 +176,13 @@ call "%~dp0modules\account_recovery.bat"
 color 0A
 goto MAIN_MENU
 
+:LOAD_14
+cls
+color 0A
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0modules\troubleshoot.ps1"
+color 0A
+goto MAIN_MENU
+
 :ABOUT
 cls
 color 0A
@@ -200,6 +209,7 @@ echo   ^|     [10] Remote Management and Access                                 
 echo   ^|     [11] Security and Intrusion Audit                                                           ^|
 echo   ^|     [12] Windows All in One Utilities                                                           ^|
 echo   ^|     [13] Account Recovery and Access Guide                                                      ^|
+echo   ^|     [14] Custom Problem Solver                                                                  ^|
 echo   ^|                                                                                                 ^|
 echo   +-------------------------------------------------------------------------------------------------+
 echo.
