@@ -15,31 +15,168 @@ echo   +------------------------------------------------------------------------
 echo   ^|                       Windows Activation and License Tools                                    ^|
 echo   +------------------------------------------------------------------------------------------------+
 echo   ^|                                                                                                ^|
-echo   ^|   [1]   Check Activation Status                                                               ^|
-echo   ^|   [2]   Check Windows License Type                                                            ^|
-echo   ^|   [3]   Activate Office with Ohook (Permanent - MAS)                                         ^|
-echo   ^|   [4]   Rearm Evaluation License (extend trial)                                              ^|
-echo   ^|   [5]   Fix Activation Error 0xC004F074                                                      ^|
-echo   ^|   [6]   Fix Activation Error 0x8007007B                                                      ^|
-echo   ^|   [7]   View Full License Details (slmgr /dlv)                                               ^|
+echo   ^|   [1]   Install Office (Word, Excel, PowerPoint, Outlook)                                 ^|
+echo   ^|   [2]   Check Activation Status                                                               ^|
+echo   ^|   [3]   Check Windows License Type                                                            ^|
+echo   ^|   [4]   Activate Office with Ohook (Permanent - MAS)                                         ^|
+echo   ^|   [5]   Activate with Product Key (slmgr /ipk)                                                ^|
+echo   ^|   [6]   Rearm Evaluation License (extend trial)                                              ^|
+echo   ^|   [7]   Fix Activation Error 0xC004F074                                                      ^|
+echo   ^|   [8]   Fix Activation Error 0x8007007B                                                      ^|
+echo   ^|   [9]   View Full License Details (slmgr /dlv)                                               ^|
 echo   ^|   [0]   Back to Main Menu                                                                     ^|
 echo   ^|                                                                                                ^|
 echo   +------------------------------------------------------------------------------------------------+
 echo.
 set "ACT_CHOICE="
 set /p "ACT_CHOICE=    >> Select option: "
+if defined ACT_CHOICE set "ACT_CHOICE=!ACT_CHOICE: =!"
 
-if "%ACT_CHOICE%"=="1" goto ACT_1
-if "%ACT_CHOICE%"=="2" goto ACT_2
-if "%ACT_CHOICE%"=="3" goto ACT_4
-if "%ACT_CHOICE%"=="4" goto ACT_5
-if "%ACT_CHOICE%"=="5" goto ACT_6
-if "%ACT_CHOICE%"=="6" goto ACT_7
-if "%ACT_CHOICE%"=="7" goto ACT_8
+if "%ACT_CHOICE%"=="1" goto ACT_INSTALL_OFFICE
+if "%ACT_CHOICE%"=="2" goto ACT_1
+if "%ACT_CHOICE%"=="3" goto ACT_2
+if "%ACT_CHOICE%"=="4" goto ACT_4
+if "%ACT_CHOICE%"=="5" goto ACT_3
+if "%ACT_CHOICE%"=="6" goto ACT_5
+if "%ACT_CHOICE%"=="7" goto ACT_6
+if "%ACT_CHOICE%"=="8" goto ACT_7
+if "%ACT_CHOICE%"=="9" goto ACT_8
 if "%ACT_CHOICE%"=="0" goto :EOF
 goto ACTIVATION_MENU
 
-:: == [1] Check Activation Status ==========================
+:: == [1] Install Office (Word, Excel, PowerPoint, Outlook Only) =
+:ACT_INSTALL_OFFICE
+cls
+echo.
+echo   +------------------------------------------------------------------------------------------------+
+echo   ^|   Install Microsoft Office (Word, Excel, PowerPoint, Outlook Only)                             ^|
+echo   +------------------------------------------------------------------------------------------------+
+echo.
+echo   This downloads and installs official Microsoft Office directly from Microsoft CDN.
+echo   Configured to install ONLY the essential core apps:
+echo     - Microsoft Word
+echo     - Microsoft Excel
+echo     - Microsoft PowerPoint
+echo     - Microsoft Outlook
+echo.
+echo   Excluded apps: Access, Publisher, OneNote, Teams, OneDrive, Skype/Lync.
+echo.
+echo   [!] Requires an active Internet connection.
+echo.
+echo   Select Office Edition to install:
+echo     [1] Office 2021 Professional Plus  (Recommended - Works with Ohook)
+echo     [2] Office 2024 Professional Plus  (Latest LTS Release)
+echo     [3] Microsoft 365 Apps for Enterprise
+echo     [0] Cancel
+echo.
+set "ED_CHOICE="
+set /p "ED_CHOICE=   >> Choose edition [Default=1]: "
+if defined ED_CHOICE set "ED_CHOICE=!ED_CHOICE: =!"
+if "%ED_CHOICE%"=="0" goto ACTIVATION_MENU
+if "%ED_CHOICE%"=="" set "ED_CHOICE=1"
+
+set "PROD_ID=ProPlus2021Retail"
+set "PROD_NAME=Office 2021 Professional Plus"
+if "%ED_CHOICE%"=="2" (
+    set "PROD_ID=ProPlus2024Retail"
+    set "PROD_NAME=Office 2024 Professional Plus"
+)
+if "%ED_CHOICE%"=="3" (
+    set "PROD_ID=O365ProPlusRetail"
+    set "PROD_NAME=Microsoft 365 Enterprise"
+)
+
+:: Auto-detect Architecture
+if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
+    set "OFFICE_ARCH=64"
+) else (
+    set "OFFICE_ARCH=32"
+)
+
+echo.
+echo   [*] Target Edition : !PROD_NAME!
+echo   [*] Architecture   : !OFFICE_ARCH!-bit (Auto-detected)
+echo   [*] Included Apps  : Word, Excel, PowerPoint, Outlook
+echo.
+set "CONFIRM_INS="
+set /p "CONFIRM_INS=   >> Begin installation now? (Y/N): "
+if defined CONFIRM_INS set "CONFIRM_INS=!CONFIRM_INS: =!"
+if /i not "%CONFIRM_INS%"=="Y" (
+    echo   [!] Installation cancelled.
+    ping 127.0.0.1 -n 3 >nul
+    goto ACTIVATION_MENU
+)
+
+set "OFFICE_DIR=%TEMP%\KyuTools_OfficeInstall"
+if exist "!OFFICE_DIR!" rd /s /q "!OFFICE_DIR!" >nul 2>&1
+mkdir "!OFFICE_DIR!" >nul 2>&1
+
+echo.
+echo   [*] Generating deployment configuration...
+(
+echo ^<Configuration^>
+echo   ^<Add OfficeClientEdition="!OFFICE_ARCH!" Channel="Current"^>
+echo     ^<Product ID="!PROD_ID!"^>
+echo       ^<Language ID="MatchOS" /^>
+echo       ^<Language ID="en-us" /^>
+echo       ^<ExcludeApp ID="Access" /^>
+echo       ^<ExcludeApp ID="Bing" /^>
+echo       ^<ExcludeApp ID="Groove" /^>
+echo       ^<ExcludeApp ID="Lync" /^>
+echo       ^<ExcludeApp ID="OneDrive" /^>
+echo       ^<ExcludeApp ID="OneNote" /^>
+echo       ^<ExcludeApp ID="Publisher" /^>
+echo       ^<ExcludeApp ID="Teams" /^>
+echo     ^</Product^>
+echo   ^</Add^>
+echo   ^<RemoveMSI /^>
+echo   ^<Display Level="Full" AcceptEULA="TRUE" /^>
+echo   ^<Property Name="AUTOACTIVATE" Value="0" /^>
+echo ^</Configuration^>
+) > "!OFFICE_DIR!\configuration.xml"
+
+echo   [*] Downloading official Microsoft Office Deployment Tool from Microsoft CDN...
+curl.exe -L -# -o "!OFFICE_DIR!\setup.exe" "https://officecdn.microsoft.com/pr/wsus/setup.exe"
+
+if not exist "!OFFICE_DIR!\setup.exe" (
+    echo.
+    echo   [-] Failed to download setup.exe from Microsoft CDN.
+    echo   [-] Please check your internet connection and try again.
+    echo.
+    pause
+    goto ACTIVATION_MENU
+)
+
+echo.
+echo   [*] Launching Microsoft Office Click-to-Run Installer...
+echo   [*] The official Microsoft Office installation window will now appear.
+echo   [*] Please wait until the installation finishes...
+echo.
+
+pushd "!OFFICE_DIR!"
+start /wait "" setup.exe /configure configuration.xml
+set "INSTALL_STATUS=%ERRORLEVEL%"
+popd
+
+:: Cleanup installer files
+rd /s /q "!OFFICE_DIR!" >nul 2>&1
+
+echo.
+if %INSTALL_STATUS% EQU 0 (
+    echo   [+] Microsoft Office installation finished successfully!
+    echo   [+] Word, Excel, PowerPoint, and Outlook are ready in your Start Menu.
+    echo.
+    echo   [*] Tip: To permanently activate Office, choose Option [4] in this menu
+    echo       (Activate Office with Ohook - MAS Method).
+) else (
+    echo   [!] Installer exited with code %INSTALL_STATUS%.
+    echo   [!] If an installation was already in progress, restart your PC and retry.
+)
+echo.
+pause
+goto ACTIVATION_MENU
+
+:: == [2] Check Activation Status ==========================
 :ACT_1
 cls
 echo.
@@ -189,7 +326,7 @@ echo   [*] Restarting licensing service...
 net stop sppsvc /y >nul 2>&1
 net start sppsvc >nul 2>&1
 echo.
-echo   [+] Done. Re-enter your product key using Option [3].
+echo   [+] Done. Re-enter your product key using Option [5].
 echo.
 pause
 goto ACTIVATION_MENU

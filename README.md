@@ -74,6 +74,7 @@ Input characters are hidden from the console display during entry for security.
 
 ### 1. Windows Activation and License
 Located in [`modules/activation.bat`](modules/activation.bat):
+- **Install Office (Word, Excel, PowerPoint, Outlook Only)**: Downloads official Microsoft Click-to-Run deployment tools directly from Microsoft CDN and installs only core productivity apps (Word, Excel, PowerPoint, Outlook), automatically excluding bloatware (Access, Publisher, OneNote, Teams, OneDrive, Skype/Lync). Supports Office 2021, Office 2024, or Microsoft 365.
 - **Activation Status Check**: Checks license expiration and grace periods via `slmgr.vbs /xpr` and `/dli`.
 - **License Type Identification**: Inspects Windows edition, build number, serial number, and license channel (Retail, OEM, Volume).
 - **Product Key Entry**: Installs product keys (`slmgr /ipk`) and attempts online activation (`slmgr /ato`).
