@@ -139,7 +139,7 @@ powershell -NoProfile -Command ^
   "    Write-Output '   [+] Printer shared successfully!';" ^
   "    Write-Output '   [+] Share Name : %SHARE_NAME%';" ^
   "    Write-Output '   [+] Network Path: \\%COMPUTERNAME%\%SHARE_NAME%';" ^
-  "    Write-Output '   [!] Other PCs can now connect by opening KyuTools -> Option [4] and typing: %SHARE_NAME%';" ^
+  "    Write-Output '   [!] Other PCs can now connect by opening ONYX IT DEPARTMENT TECH TOOLS -> Option [4] and typing: %SHARE_NAME%';" ^
   "} catch {" ^
   "    Write-Output ('   [-] Failed to share printer: ' + $_.Exception.Message);" ^
   "}"

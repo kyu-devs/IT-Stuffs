@@ -1,13 +1,13 @@
 @echo off
 setlocal EnableDelayedExpansion
 :: ============================================================
-::  KyuTools - Remote Management Module
+::  ONYX IT DEPARTMENT TECH TOOLS - Remote Management Module
 :: ============================================================
 
 :REMOTE_MENU
 cls
 mode con: cols=100 lines=45
-title  KyuTools - Remote Management and Access
+title  ONYX IT DEPARTMENT TECH TOOLS - Remote Management and Access
 color 0A
 
 echo.

@@ -1,4 +1,4 @@
-# KyuTools - Password Gate
+# ONYX IT DEPARTMENT TECH TOOLS - Password Gate
 # Handles completely invisible password input (no stars or characters shown)
 
 $password = ""

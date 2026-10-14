@@ -1,4 +1,4 @@
-# KyuTools v1.1
+# ONYX IT DEPARTMENT TECH TOOLS v1.1
 
 <p align="center">
   <img src="https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Platform" />
@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/badge/Privileges-Administrator-red?style=for-the-badge" alt="Admin" />
 </p>
 
-A modular, password-protected Command Prompt administrative and IT Helpdesk toolkit for Windows. **KyuTools** consolidates system diagnostics, routine maintenance, performance tuning, network optimization, security auditing, and remote troubleshooting into a single terminal dashboard.
+A modular, password-protected Command Prompt administrative and IT Helpdesk toolkit for Windows. **ONYX IT DEPARTMENT TECH TOOLS** consolidates system diagnostics, routine maintenance, performance tuning, network optimization, security auditing, and remote troubleshooting into a single terminal dashboard.
 
 ---
 
@@ -40,7 +40,7 @@ A modular, password-protected Command Prompt administrative and IT Helpdesk tool
 
 ## Overview
 
-KyuTools was built to help technicians, system administrators, and power users troubleshoot and optimize Windows workstations without needing third-party GUI software installations. It runs directly via standard Windows scripting engines (`cmd.exe` and `powershell.exe`) with native command-line utilities.
+ONYX IT DEPARTMENT TECH TOOLS was built to help technicians, system administrators, and power users troubleshoot and optimize Windows workstations without needing third-party GUI software installations. It runs directly via standard Windows scripting engines (`cmd.exe` and `powershell.exe`) with native command-line utilities.
 
 ### Key Highlights
 - **Self-Elevating Execution**: Verifies administrative permissions at startup and prompts UAC elevation automatically if required.
@@ -81,7 +81,7 @@ Located in [`modules/activation.bat`](modules/activation.bat):
 - **Product Key Entry**: Installs product keys (`slmgr /ipk`) and attempts online activation (`slmgr /ato`).
 - **Office Permanent Activation**: Integrates Microsoft Activation Scripts (MAS) Ohook method for Microsoft Office (`irm https://get.activated.win | iex`).
 - **Trial Rearm**: Resets evaluation periods using `slmgr.vbs /rearm`.
-- **Error Resolvers**: Automated repairs for common activation errors `0xC004F074` (KMS unavailable) and `0x8007007B` (invalid key format).
+- **Intelligent Error Detection & Automated Fixes**: Automatically intercepts and explains activation error codes (such as `0xC004F074`, `0x8007007B`, `0xC004C003`, `0xC004F050`, or network/time sync issues) during key entry or status audits, prompting the technician before executing targeted automated remediation.
 - **Detailed Diagnostics**: Displays full license details via `slmgr.vbs /dlv`.
 
 ### 2. Network and Internet Optimizer
@@ -114,7 +114,7 @@ Located in [`modules/sysinfo.bat`](modules/sysinfo.bat):
 - **Hardware Inventory**: Queries detailed processor clock speeds and core counts, RAM physical sticks with vendor and frequency, GPU adapters and VRAM, and storage volumes.
 - **Battery Health**: Generates an HTML battery health and capacity history report (`powercfg /batteryreport`) saved to the Desktop.
 - **Processes & Autostart**: Displays active processes (`tasklist`) and queries registry Run keys (`HKCU` and `HKLM`) for startup applications.
-- **Consolidated Export**: Exports a full diagnostic system summary to `KyuTools_Report.txt` on the current user's Desktop.
+- **Consolidated Export**: Exports a full diagnostic system summary to `OnyxTools_Report.txt` on the current user's Desktop.
 
 ### 5. Privacy and Telemetry Control
 Located in [`modules/privacy.bat`](modules/privacy.bat):
@@ -250,4 +250,4 @@ IT-Stuffs/
 
 ## Disclaimer
 
-KyuTools provides direct access to administrative Windows utilities, registry modifications, policy alterations, and network resets. Use these tools responsibly. Always test optimizations and registry changes in appropriate environments prior to deploying across production systems.
+ONYX IT DEPARTMENT TECH TOOLS provides direct access to administrative Windows utilities, registry modifications, policy alterations, and network resets. Use these tools responsibly. Always test optimizations and registry changes in appropriate environments prior to deploying across production systems.

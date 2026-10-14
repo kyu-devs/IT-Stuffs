@@ -2,13 +2,13 @@
 
 setlocal EnableDelayedExpansion
 :: ============================================================
-::  KyuTools - System Information Module
+::  ONYX IT DEPARTMENT TECH TOOLS - System Information Module
 :: ============================================================
 
 :SYSINFO_MENU
 cls
 mode con: cols=100 lines=45
-title  KyuTools - System Information
+title  ONYX IT DEPARTMENT TECH TOOLS - System Information
 color 0A
 
 echo.
@@ -25,7 +25,7 @@ echo   ^|   [6]   Battery Report  (saved to Desktop)                            
 echo   ^|   [7]   Running Processes                                                                     ^|
 echo   ^|   [8]   Startup Programs                                                                      ^|
 echo   ^|   [9]   Environment Variables                                                                 ^|
-echo   ^|   [A]   Export Full Report to Desktop                                                         ^|
+echo   ^|   [10]  Export Full Report to Desktop                                                         ^|
 echo   ^|   [0]   Back to Main Menu                                                                     ^|
 echo   ^|                                                                                                ^|
 echo   +------------------------------------------------------------------------------------------------+
@@ -42,7 +42,8 @@ if /i "%SI_CHOICE%"=="6" goto SI_6
 if /i "%SI_CHOICE%"=="7" goto SI_7
 if /i "%SI_CHOICE%"=="8" goto SI_8
 if /i "%SI_CHOICE%"=="9" goto SI_9
-if /i "%SI_CHOICE%"=="A" goto SI_A
+if /i "%SI_CHOICE%"=="10" goto SI_10
+if /i "%SI_CHOICE%"=="A" goto SI_10
 if "%SI_CHOICE%"=="0" goto :EOF
 goto SYSINFO_MENU
 
@@ -174,6 +175,7 @@ echo.
 pause
 goto SYSINFO_MENU
 
+:SI_10
 :SI_A
 cls
 echo.
@@ -181,8 +183,8 @@ echo   +------------------------------------------------------------------------
 echo   ^|   Export Full System Report to Desktop                                                        ^|
 echo   +------------------------------------------------------------------------------------------------+
 echo.
-set "REPORT=%USERPROFILE%\Desktop\KyuTools_Report.txt"
-echo KyuTools System Report                            > "%REPORT%"
+set "REPORT=%USERPROFILE%\Desktop\OnyxTools_Report.txt"
+echo ONYX IT DEPARTMENT TECH TOOLS System Report            > "%REPORT%"
 echo Generated: %date% %time%                         >> "%REPORT%"
 echo =================================================  >> "%REPORT%"
 systeminfo                                             >> "%REPORT%"
@@ -197,7 +199,7 @@ powershell -NoProfile -Command "Get-CimInstance Win32_DiskDrive | Format-List Mo
 echo =[ NETWORK ]=====================================  >> "%REPORT%"
 ipconfig /all                                          >> "%REPORT%"
 echo.
-echo   [+] Report saved to Desktop: KyuTools_Report.txt
+echo   [+] Report saved to Desktop: OnyxTools_Report.txt
 echo.
 pause
 goto SYSINFO_MENU

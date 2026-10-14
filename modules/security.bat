@@ -1,13 +1,13 @@
 @echo off
 setlocal EnableDelayedExpansion
 :: ============================================================
-::  KyuTools - Security and Intrusion Audit Module
+::  ONYX IT DEPARTMENT TECH TOOLS - Security and Intrusion Audit Module
 :: ============================================================
 
 :SEC_MENU
 cls
 mode con: cols=100 lines=45
-title  KyuTools - Security and Intrusion Audit
+title  ONYX IT DEPARTMENT TECH TOOLS - Security and Intrusion Audit
 color 0A
 
 echo.

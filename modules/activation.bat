@@ -1,13 +1,13 @@
 @echo off
 setlocal EnableDelayedExpansion
 :: ============================================================
-::  KyuTools - Windows Activation & License Module
+::  ONYX IT DEPARTMENT TECH TOOLS - Windows Activation & License Module
 :: ============================================================
 
 :ACTIVATION_MENU
 cls
 mode con: cols=100 lines=45
-title  KyuTools - Activation and License
+title  ONYX IT DEPARTMENT TECH TOOLS - Activation and License
 color 0A
 
 echo.
@@ -16,15 +16,13 @@ echo   ^|                       Windows Activation and License Tools            
 echo   +------------------------------------------------------------------------------------------------+
 echo   ^|                                                                                                ^|
 echo   ^|   [1]   Install Office (Word, Excel, PowerPoint, Outlook Only)                                 ^|
-echo   ^|   [2]   Scrub Microsoft Office (Remove M365 / Clean Licenses)                                 ^|
+echo   ^|   [2]   Scrub Microsoft Office (Remove M365 / Clean Licenses)                                  ^|
 echo   ^|   [3]   Check Activation Status                                                               ^|
 echo   ^|   [4]   Check Windows License Type                                                            ^|
 echo   ^|   [5]   Activate Office with Ohook (Permanent - MAS)                                         ^|
 echo   ^|   [6]   Activate with Product Key (slmgr /ipk)                                                ^|
-echo   ^|   [7]   Rearm Evaluation License (extend trial)                                              ^|
-echo   ^|   [8]   Fix Activation Error 0xC004F074                                                      ^|
-echo   ^|   [9]   Fix Activation Error 0x8007007B                                                      ^|
-echo   ^|   [A]   View Full License Details (slmgr /dlv)                                                ^|
+echo   ^|   [7]   Rearm Evaluation License (extend trial)                                               ^|
+echo   ^|   [8]   View Full License Details (slmgr /dlv)                                                ^|
 echo   ^|   [0]   Back to Main Menu                                                                     ^|
 echo   ^|                                                                                                ^|
 echo   +------------------------------------------------------------------------------------------------+
@@ -40,9 +38,7 @@ if "%ACT_CHOICE%"=="4" goto ACT_2
 if "%ACT_CHOICE%"=="5" goto ACT_4
 if "%ACT_CHOICE%"=="6" goto ACT_3
 if "%ACT_CHOICE%"=="7" goto ACT_5
-if "%ACT_CHOICE%"=="8" goto ACT_6
-if "%ACT_CHOICE%"=="9" goto ACT_7
-if /i "%ACT_CHOICE%"=="A" goto ACT_8
+if "%ACT_CHOICE%"=="8" goto ACT_8
 if "%ACT_CHOICE%"=="0" goto :EOF
 goto ACTIVATION_MENU
 
@@ -109,7 +105,7 @@ if /i not "%CONFIRM_INS%"=="Y" (
     goto ACTIVATION_MENU
 )
 
-set "OFFICE_DIR=%TEMP%\KyuTools_OfficeInstall"
+set "OFFICE_DIR=%TEMP%\OnyxTools_OfficeInstall"
 if exist "!OFFICE_DIR!" rd /s /q "!OFFICE_DIR!" >nul 2>&1
 mkdir "!OFFICE_DIR!" >nul 2>&1
 
@@ -172,7 +168,19 @@ if %INSTALL_STATUS% EQU 0 (
     echo       (Activate Office with Ohook - MAS Method).
 ) else (
     echo   [!] Installer exited with code %INSTALL_STATUS%.
-    echo   [!] If an installation was already in progress, restart your PC and retry.
+    echo   [!] Office installation was interrupted or encountered an error.
+    echo.
+    echo   [*] Possible causes:
+    echo       - Conflicting or corrupted previous Office / M365 installation
+    echo       - Background Click-to-Run service blocked
+    echo       - Internet connection dropped during setup
+    echo.
+    set "SCRUB_PROMPT="
+    set /p "SCRUB_PROMPT=   >> Would you like ONYX IT DEPARTMENT TECH TOOLS to run the Office Scrubber to clean leftovers? (Y/N): "
+    if defined SCRUB_PROMPT set "SCRUB_PROMPT=!SCRUB_PROMPT: =!"
+    if /i "!SCRUB_PROMPT!"=="Y" (
+        goto ACT_SCRUB_OFFICE
+    )
 )
 echo.
 pause
@@ -300,15 +308,65 @@ echo   ^|   Activation Status                                                   
 echo   +------------------------------------------------------------------------------------------------+
 echo.
 echo   [ Expiry / Grace Period ]
-cscript //nologo "%windir%\System32\slmgr.vbs" /xpr
+set "STAT_OUT=%TEMP%\kyu_stat_out.txt"
+if exist "!STAT_OUT!" del /f /q "!STAT_OUT!" >nul 2>&1
+cscript //nologo "%windir%\System32\slmgr.vbs" /xpr > "!STAT_OUT!" 2>&1
+type "!STAT_OUT!"
 echo.
 echo   [ License Summary ]
+cscript //nologo "%windir%\System32\slmgr.vbs" /dli >> "!STAT_OUT!" 2>&1
 cscript //nologo "%windir%\System32\slmgr.vbs" /dli
 echo.
+
+findstr /i "Notification Grace unlicense not\ activated error 0x" "!STAT_OUT!" >nul 2>&1
+if %errorlevel% EQU 0 (
+    echo   ================================================================================================
+    echo   [!] NOTICE: Windows is not permanently activated (in grace period, trial, or unlicensed).
+    echo   ================================================================================================
+    echo.
+    set "FIX_STAT="
+    set /p "FIX_STAT=   >> Would you like ONYX IT DEPARTMENT TECH TOOLS to help resolve this activation status? (Y/N): "
+    if defined FIX_STAT set "FIX_STAT=!FIX_STAT: =!"
+    if /i "!FIX_STAT!"=="Y" (
+        echo.
+        echo   Select Resolution Option:
+        echo     [1] Permanently Activate Windows (HWID - MAS Method)
+        echo     [2] Enter a Product Key (slmgr /ipk)
+        echo     [3] Reset Licensing Service (restart sppsvc ^& clear KMS cache)
+        echo     [4] Rearm 30-Day Evaluation Period
+        echo     [0] Cancel
+        echo.
+        set "RES_CHOICE="
+        set /p "RES_CHOICE=   >> Select option [1-4]: "
+        if defined RES_CHOICE set "RES_CHOICE=!RES_CHOICE: =!"
+        if "!RES_CHOICE!"=="1" (
+            if exist "!STAT_OUT!" del /f /q "!STAT_OUT!" >nul 2>&1
+            goto ACT_HWID_MAS
+        )
+        if "!RES_CHOICE!"=="2" (
+            if exist "!STAT_OUT!" del /f /q "!STAT_OUT!" >nul 2>&1
+            goto ACT_3
+        )
+        if "!RES_CHOICE!"=="3" (
+            echo.
+            echo   [*] Restarting Software Protection Service...
+            net stop sppsvc /y >nul 2>&1
+            net start sppsvc >nul 2>&1
+            cscript //nologo "%windir%\System32\slmgr.vbs" /ckms >nul 2>&1
+            echo   [+] Licensing service reset.
+            echo.
+        )
+        if "!RES_CHOICE!"=="4" (
+            if exist "!STAT_OUT!" del /f /q "!STAT_OUT!" >nul 2>&1
+            goto ACT_5
+        )
+    )
+)
+if exist "!STAT_OUT!" del /f /q "!STAT_OUT!" >nul 2>&1
 pause
 goto ACTIVATION_MENU
 
-:: == [2] License Type =====================================
+:: == [4] License Type =====================================
 :ACT_2
 cls
 echo.
@@ -326,7 +384,7 @@ echo.
 pause
 goto ACTIVATION_MENU
 
-:: == [3] Activate with Product Key ========================
+:: == [6] Activate with Product Key ========================
 :ACT_3
 cls
 echo.
@@ -336,6 +394,7 @@ echo   +------------------------------------------------------------------------
 echo.
 set "PKEY="
 set /p "PKEY=   >> Enter Key (XXXXX-XXXXX-XXXXX-XXXXX-XXXXX): "
+if defined PKEY set "PKEY=!PKEY: =!"
 if "%PKEY%"=="" (
     echo   [!] No key entered. Cancelled.
     pause
@@ -346,9 +405,20 @@ echo   [*] Installing product key...
 cscript //nologo "%windir%\System32\slmgr.vbs" /ipk %PKEY%
 echo.
 echo   [*] Attempting online activation...
-cscript //nologo "%windir%\System32\slmgr.vbs" /ato
+set "ACT_OUT_FILE=%TEMP%\kyu_act_out.txt"
+if exist "!ACT_OUT_FILE!" del /f /q "!ACT_OUT_FILE!" >nul 2>&1
+cscript //nologo "%windir%\System32\slmgr.vbs" /ato > "!ACT_OUT_FILE!" 2>&1
+type "!ACT_OUT_FILE!"
 echo.
-pause
+
+findstr /i "error 0x failed denied" "!ACT_OUT_FILE!" >nul 2>&1
+if %errorlevel% EQU 0 (
+    call :ACT_HANDLE_ERROR "!ACT_OUT_FILE!"
+) else (
+    echo   [+] Product activation completed successfully!
+    pause
+)
+if exist "!ACT_OUT_FILE!" del /f /q "!ACT_OUT_FILE!" >nul 2>&1
 goto ACTIVATION_MENU
 
 :: == [4] Office Ohook Activation ===========================
@@ -379,7 +449,7 @@ echo.
 pause
 goto ACTIVATION_MENU
 
-:: == [5] Rearm Evaluation =================================
+:: == [7] Rearm Evaluation =================================
 :ACT_5
 cls
 echo.
@@ -401,50 +471,145 @@ echo.
 pause
 goto ACTIVATION_MENU
 
-:: == [6] Fix Error 0xC004F074 =============================
-:ACT_6
+:: == Windows HWID Activation (MAS) ========================
+:ACT_HWID_MAS
 cls
 echo.
 echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Fix: Error 0xC004F074  (KMS unavailable)                                                   ^|
+echo   ^|   Activate Windows Permanently (HWID - MAS Method)                                            ^|
 echo   +------------------------------------------------------------------------------------------------+
 echo.
-echo   [*] Restarting Software Protection service...
-net stop sppsvc /y >nul 2>&1
-net start sppsvc >nul 2>&1
-echo   [+] sppsvc restarted.
+echo   This uses Microsoft Activation Scripts (MAS) to permanently 
+echo   activate Windows with a genuine Digital License (HWID).
 echo.
-echo   [*] Clearing KMS cache...
-cscript //nologo "%windir%\System32\slmgr.vbs" /ckms
+echo   [!] Requires Internet Connection.
 echo.
-echo   [*] Retrying activation...
-cscript //nologo "%windir%\System32\slmgr.vbs" /ato
+set "CONFIRM_HWID="
+set /p "CONFIRM_HWID=   >> Proceed? (Y/N): "
+if defined CONFIRM_HWID set "CONFIRM_HWID=!CONFIRM_HWID: =!"
+if /i not "!CONFIRM_HWID!"=="Y" goto ACTIVATION_MENU
+
+echo.
+echo   [*] Launching MAS Activation Menu via PowerShell...
+echo   [*] Please select option [1] "HWID" in the window that appears.
+echo.
+powershell -ExecutionPolicy Bypass -Command "irm https://get.activated.win | iex"
+echo.
+echo   [+] Finished. Please check your activation status.
 echo.
 pause
 goto ACTIVATION_MENU
 
-:: == [7] Fix Error 0x8007007B =============================
-:ACT_7
-cls
+:: == Smart Activation Error Handler =======================
+:ACT_HANDLE_ERROR
+set "ERR_FILE=%~1"
+set "DETECTED_ERR="
+set "ERR_DESC="
+
+findstr /i "0xC004F074" "!ERR_FILE!" >nul 2>&1 && (
+    set "DETECTED_ERR=0xC004F074"
+    set "ERR_DESC=KMS Server is unreachable or Software Protection service is out of sync."
+)
+findstr /i "0x8007007B" "!ERR_FILE!" >nul 2>&1 && (
+    set "DETECTED_ERR=0x8007007B"
+    set "ERR_DESC=The product key has an invalid format, or a generic KMS key is pointing to an invalid DNS host."
+)
+findstr /i "0xC004C003" "!ERR_FILE!" >nul 2>&1 && (
+    set "DETECTED_ERR=0xC004C003"
+    set "ERR_DESC=The activation server determined the specified product key has been blocked by Microsoft."
+)
+findstr /i "0xC004F050" "!ERR_FILE!" >nul 2>&1 && (
+    set "DETECTED_ERR=0xC004F050"
+    set "ERR_DESC=The product key is invalid for this edition of Windows."
+)
+findstr /i "0x80072EE7 0x80072F8F" "!ERR_FILE!" >nul 2>&1 && (
+    set "DETECTED_ERR=Network/Clock Sync Error"
+    set "ERR_DESC=Cannot communicate with activation servers or PC system clock is out of sync."
+)
+
+if not defined DETECTED_ERR (
+    set "DETECTED_ERR=Activation Error"
+    set "ERR_DESC=Windows licensing service encountered an issue attempting activation."
+)
+
 echo.
-echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Fix: Error 0x8007007B  (invalid key format)                                                ^|
-echo   +------------------------------------------------------------------------------------------------+
+echo   ================================================================================================
+echo   [!] ACTIVATION PROBLEM DETECTED: !DETECTED_ERR!
+echo   [*] Details: !ERR_DESC!
+echo   ================================================================================================
 echo.
-echo   [*] Uninstalling current product key...
-cscript //nologo "%windir%\System32\slmgr.vbs" /upk
+set "DO_FIX="
+set /p "DO_FIX=   >> Would you like ONYX IT DEPARTMENT TECH TOOLS to attempt to fix this error? (Y/N): "
+if defined DO_FIX set "DO_FIX=!DO_FIX: =!"
+if /i not "!DO_FIX!"=="Y" (
+    echo   [*] Fix cancelled by user.
+    pause
+    goto :EOF
+)
+
 echo.
-echo   [*] Clearing key from registry...
-cscript //nologo "%windir%\System32\slmgr.vbs" /cpky
-echo.
-echo   [*] Restarting licensing service...
+echo   [*] Applying automated fix for !DETECTED_ERR!...
+
+if "!DETECTED_ERR!"=="0xC004F074" (
+    echo   [*] Step 1: Restarting Software Protection Service (sppsvc)...
+    net stop sppsvc /y >nul 2>&1
+    net start sppsvc >nul 2>&1
+    echo   [*] Step 2: Clearing stale KMS server cache...
+    cscript //nologo "%windir%\System32\slmgr.vbs" /ckms >nul 2>&1
+    echo   [*] Step 3: Resynchronizing system clock...
+    w32tm /resync >nul 2>&1
+    echo   [*] Step 4: Retrying activation...
+    echo.
+    cscript //nologo "%windir%\System32\slmgr.vbs" /ato
+    echo.
+    echo   [+] Fix routine completed. Check above for activation result.
+    pause
+    goto :EOF
+)
+
+if "!DETECTED_ERR!"=="0x8007007B" (
+    echo   [*] Step 1: Uninstalling corrupted product key...
+    cscript //nologo "%windir%\System32\slmgr.vbs" /upk >nul 2>&1
+    echo   [*] Step 2: Clearing key from registry...
+    cscript //nologo "%windir%\System32\slmgr.vbs" /cpky >nul 2>&1
+    echo   [*] Step 3: Restarting licensing service...
+    net stop sppsvc /y >nul 2>&1
+    net start sppsvc >nul 2>&1
+    echo.
+    echo   [+] Stale/invalid key cleared successfully!
+    echo   [*] You can now cleanly re-enter your valid product key.
+    pause
+    goto :EOF
+)
+
+if "!DETECTED_ERR!"=="Network/Clock Sync Error" (
+    echo   [*] Step 1: Flushing DNS cache...
+    ipconfig /flushdns >nul 2>&1
+    echo   [*] Step 2: Resynchronizing system time with time.windows.com...
+    net start w32time >nul 2>&1
+    w32tm /resync >nul 2>&1
+    echo   [*] Step 3: Retrying activation...
+    echo.
+    cscript //nologo "%windir%\System32\slmgr.vbs" /ato
+    echo.
+    echo   [+] Fix routine completed.
+    pause
+    goto :EOF
+)
+
+:: General Fix Routine
+echo   [*] Step 1: Restarting licensing service (sppsvc)...
 net stop sppsvc /y >nul 2>&1
 net start sppsvc >nul 2>&1
+echo   [*] Step 2: Resetting KMS host cache...
+cscript //nologo "%windir%\System32\slmgr.vbs" /ckms >nul 2>&1
+echo   [*] Step 3: Retrying online activation...
 echo.
-echo   [+] Done. Re-enter your product key using Option [6].
+cscript //nologo "%windir%\System32\slmgr.vbs" /ato
 echo.
+echo   [+] Fix routine completed.
 pause
-goto ACTIVATION_MENU
+goto :EOF
 
 :: == [8] View License Details =============================
 :ACT_8

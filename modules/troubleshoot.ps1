@@ -1,10 +1,10 @@
-﻿# ============================================================
-# KyuTools - Custom Problem Solver (Module 14)
+# ============================================================
+# ONYX IT DEPARTMENT TECH TOOLS - Custom Problem Solver (Module 14)
 # Describe your problem, get step-by-step fix suggestions.
 # Hardware diagnostics activate when software fixes fail.
 # ============================================================
 
-$host.UI.RawUI.WindowTitle = "KyuTools - Custom Problem Solver"
+$host.UI.RawUI.WindowTitle = "ONYX IT DEPARTMENT TECH TOOLS - Custom Problem Solver"
 
 # == Helpers ===================================================================
 
@@ -1146,7 +1146,7 @@ $FallbackSteps = @(
 function Show-HardwareMenu {
     while ($true) {
         Clear-Host
-        Write-Header "KyuTools - Physical Hardware Checklists"
+        Write-Header "ONYX IT DEPARTMENT TECH TOOLS - Physical Hardware Checklists"
         Write-Host "   Select a hardware category to view its physical inspection checklist:" -ForegroundColor DarkGray
         Write-Host ""
         $cats = @(
@@ -1201,7 +1201,7 @@ function Find-Problem {
 
 while ($true) {
     Clear-Host
-    Write-Header "KyuTools - Custom Problem Solver"
+    Write-Header "ONYX IT DEPARTMENT TECH TOOLS - Custom Problem Solver"
 
     Write-Host "   Describe your problem in plain English and I will suggest fixes step by step." -ForegroundColor DarkGray
     Write-Host "   If software repairs do not resolve the issue, hardware diagnostics will activate." -ForegroundColor DarkCyan

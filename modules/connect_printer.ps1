@@ -1,5 +1,5 @@
 # ============================================================
-# KyuTools - Connect to a Shared Printer & Auto-Fixer
+# ONYX IT DEPARTMENT TECH TOOLS - Connect to a Shared Printer & Auto-Fixer
 # All-green console output (color 0A)
 # ============================================================
 
@@ -224,7 +224,7 @@ function Show-DriverRepairAssistant {
 
     Write-Output ""
     Write-Output "   +-------------------------------------------------------------------------------------------------+"
-    Write-Output "   |                         Printer Driver Repair Assistant                                         |"
+    Write-Output "   |                                 Printer Driver Repair Assistant                                 |"
     Write-Output "   +-------------------------------------------------------------------------------------------------+"
     Write-Output "   Windows needs a driver for this printer to be installed or registered on this PC."
     Write-Output ""
@@ -631,13 +631,13 @@ if ($MyInvocation.InvocationName -ne '.') {
     Write-Output "   [*] Suggested Fix:"
     if ($parsedErr.IsDriverError) {
         Write-Output "       The printer driver is missing, corrupted, or blocked by Point & Print policies."
-        Write-Output "       KyuTools can unblock driver policies, reset driver caches, or guide driver installation."
+        Write-Output "       ONYX IT DEPARTMENT TECH TOOLS can unblock driver policies, reset driver caches, or guide driver installation."
     } else {
-        Write-Output "       KyuTools can automatically configure the required RPC policies,"
+        Write-Output "       ONYX IT DEPARTMENT TECH TOOLS can automatically configure the required RPC policies,"
         Write-Output "       Point & Print rules, SMB signing, firewall, and restart the Print Spooler."
     }
     Write-Output ""
-    $answer = Read-Host "   >> Do you want KyuTools to automatically fix this error now? (Y/N)"
+    $answer = Read-Host "   >> Do you want ONYX IT DEPARTMENT TECH TOOLS to automatically fix this error now? (Y/N)"
 
     if ($answer -match '^[Yy]') {
         Write-Output ""
@@ -688,7 +688,7 @@ if ($MyInvocation.InvocationName -ne '.') {
             if ($targetPath -match '^\\\\([^\\]+)\\') {
                 $rHost = $matches[1]
                 Write-Output "   [-] Note: This PC has been repaired, but the Host PC ($rHost) may still be blocking sharing."
-                Write-Output "   [!] Solution: Run KyuTools Option [1] on the Host PC ($rHost) to enable sharing."
+                Write-Output "   [!] Solution: Run ONYX IT DEPARTMENT TECH TOOLS Option [1] on the Host PC ($rHost) to enable sharing."
             }
         }
         Write-Output ""

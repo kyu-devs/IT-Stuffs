@@ -1,13 +1,13 @@
 @echo off
 setlocal EnableDelayedExpansion
 :: ============================================================
-::  KyuTools - File & Disk Utilities Module
+::  ONYX IT DEPARTMENT - TECH TOOLS - File & Disk Utilities Module
 :: ============================================================
 
 :DISK_MENU
 cls
 mode con: cols=100 lines=45
-title  KyuTools - File and Disk Utilities
+title  ONYX IT DEPARTMENT TECH TOOLS - File and Disk Utilities
 color 0A
 
 echo.
@@ -24,9 +24,9 @@ echo   ^|   [6]   Show Hidden Files in Explorer                                 
 echo   ^|   [7]   Hide System Files  (reverse)                                                          ^|
 echo   ^|   [8]   View SFC / CBS Log                                                                   ^|
 echo   ^|   [9]   Open Disk Management                                                                  ^|
-echo   ^|   [A]   Create Symbolic Link                                                                  ^|
-echo   ^|   [B]   File Hash Checker  (MD5 / SHA256 / SHA1)                                             ^|
-echo   ^|   [C]   Find Hidden Files on a Drive                                                          ^|
+echo   ^|   [10]  Create Symbolic Link                                                                  ^|
+echo   ^|   [11]  File Hash Checker  (MD5 / SHA256 / SHA1)                                             ^|
+echo   ^|   [12]  Find Hidden Files on a Drive                                                          ^|
 echo   ^|   [0]   Back to Main Menu                                                                     ^|
 echo   ^|                                                                                                ^|
 echo   +------------------------------------------------------------------------------------------------+
@@ -43,9 +43,12 @@ if /i "%DISK_CHOICE%"=="6" goto D_6
 if /i "%DISK_CHOICE%"=="7" goto D_7
 if /i "%DISK_CHOICE%"=="8" goto D_8
 if /i "%DISK_CHOICE%"=="9" goto D_9
-if /i "%DISK_CHOICE%"=="A" goto D_A
-if /i "%DISK_CHOICE%"=="B" goto D_B
-if /i "%DISK_CHOICE%"=="C" goto D_C
+if /i "%DISK_CHOICE%"=="10" goto D_10
+if /i "%DISK_CHOICE%"=="11" goto D_11
+if /i "%DISK_CHOICE%"=="12" goto D_12
+if /i "%DISK_CHOICE%"=="A" goto D_10
+if /i "%DISK_CHOICE%"=="B" goto D_11
+if /i "%DISK_CHOICE%"=="C" goto D_12
 if "%DISK_CHOICE%"=="0" goto :EOF
 goto DISK_MENU
 
@@ -195,6 +198,7 @@ echo.
 pause
 goto DISK_MENU
 
+:D_10
 :D_A
 cls
 echo.
@@ -217,6 +221,7 @@ echo.
 pause
 goto DISK_MENU
 
+:D_11
 :D_B
 cls
 echo.
@@ -243,6 +248,7 @@ echo.
 pause
 goto DISK_MENU
 
+:D_12
 :D_C
 cls
 echo.

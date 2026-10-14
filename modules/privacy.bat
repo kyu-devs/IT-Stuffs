@@ -2,13 +2,13 @@
 
 setlocal EnableDelayedExpansion
 :: ============================================================
-::  KyuTools - Privacy & Telemetry Control Module
+::  ONYX IT DEPARTMENT TECH TOOLS - Privacy & Telemetry Control Module
 :: ============================================================
 
 :PRIVACY_MENU
 cls
 mode con: cols=100 lines=45
-title  KyuTools - Privacy and Telemetry Control
+title  ONYX IT DEPARTMENT TECH TOOLS - Privacy and Telemetry Control
 color 0A
 
 echo.
@@ -142,7 +142,7 @@ echo.
 echo   [!] Adding Microsoft telemetry domains to hosts file.
 set "HOSTS=%windir%\System32\drivers\etc\hosts"
 echo. >> "%HOSTS%"
-echo # KyuTools - Telemetry Block >> "%HOSTS%"
+echo # ONYX IT DEPARTMENT TECH TOOLS - Telemetry Block >> "%HOSTS%"
 (
   echo 0.0.0.0 vortex.data.microsoft.com
   echo 0.0.0.0 vortex-win.data.microsoft.com

@@ -2,13 +2,13 @@
 
 setlocal EnableDelayedExpansion
 :: ============================================================
-::  KyuTools - Performance Tweaks Module
+::  ONYX IT DEPARTMENT TECH TOOLS - Performance Tweaks Module
 :: ============================================================
 
 :PERF_MENU
 cls
 mode con: cols=100 lines=45
-title  KyuTools - Performance Tweaks
+title  ONYX IT DEPARTMENT TECH TOOLS - Performance Tweaks
 color 0A
 
 echo.
@@ -25,7 +25,7 @@ echo   ^|   [6]   Disable Search Indexing                                       
 echo   ^|   [7]   Disable SysMain / Superfetch                                                         ^|
 echo   ^|   [8]   Disable Xbox Game Bar                                                                ^|
 echo   ^|   [9]   Enable Game Mode                                                                      ^|
-echo   ^|   [A]   Apply ALL Performance Tweaks  (Recommended)                                          ^|
+echo   ^|   [10]  Apply ALL Performance Tweaks  (Recommended)                                          ^|
 echo   ^|   [0]   Back to Main Menu                                                                     ^|
 echo   ^|                                                                                                ^|
 echo   +------------------------------------------------------------------------------------------------+
@@ -42,7 +42,8 @@ if /i "%PERF_CHOICE%"=="6" goto PF_6
 if /i "%PERF_CHOICE%"=="7" goto PF_7
 if /i "%PERF_CHOICE%"=="8" goto PF_8
 if /i "%PERF_CHOICE%"=="9" goto PF_9
-if /i "%PERF_CHOICE%"=="A" goto PF_A
+if /i "%PERF_CHOICE%"=="10" goto PF_10
+if /i "%PERF_CHOICE%"=="A" goto PF_10
 if "%PERF_CHOICE%"=="0" goto :EOF
 goto PERF_MENU
 
@@ -177,6 +178,7 @@ echo.
 pause
 goto PERF_MENU
 
+:PF_10
 :PF_A
 cls
 echo.

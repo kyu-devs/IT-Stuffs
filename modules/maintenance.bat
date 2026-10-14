@@ -2,13 +2,13 @@
 
 setlocal EnableDelayedExpansion
 :: ============================================================
-::  KyuTools - System Maintenance & Diagnostics Module
+::  ONYX IT DEPARTMENT TECH TOOLS - System Maintenance & Diagnostics Module
 :: ============================================================
 
 :MAINT_MENU
 cls
 mode con: cols=100 lines=45
-title  KyuTools - System Maintenance and Diagnostics
+title  ONYX IT DEPARTMENT TECH TOOLS - System Maintenance and Diagnostics
 color 0A
 
 echo.
@@ -25,10 +25,10 @@ echo   ^|   [6]   Empty Recycle Bin                                             
 echo   ^|   [7]   Clear Windows Update Cache                                                            ^|
 echo   ^|   [8]   Disk Health Check  (SMART)                                                           ^|
 echo   ^|   [9]   Check Disk  (CHKDSK) on C:                                                           ^|
-echo   ^|   [A]   Memory Diagnostic  (schedule on restart)                                             ^|
-echo   ^|   [B]   View Last 20 System Errors                                                           ^|
-echo   ^|   [C]   Clear All Event Logs                                                                  ^|
-echo   ^|   [D]   Open Windows Update Settings                                                          ^|
+echo   ^|   [10]  Memory Diagnostic  (schedule on restart)                                             ^|
+echo   ^|   [11]  View Last 20 System Errors                                                           ^|
+echo   ^|   [12]  Clear All Event Logs                                                                  ^|
+echo   ^|   [13]  Open Windows Update Settings                                                          ^|
 echo   ^|   [0]   Back to Main Menu                                                                     ^|
 echo   ^|                                                                                                ^|
 echo   +------------------------------------------------------------------------------------------------+
@@ -45,10 +45,14 @@ if /i "%MAINT_CHOICE%"=="6" goto M_6
 if /i "%MAINT_CHOICE%"=="7" goto M_7
 if /i "%MAINT_CHOICE%"=="8" goto M_8
 if /i "%MAINT_CHOICE%"=="9" goto M_9
-if /i "%MAINT_CHOICE%"=="A" goto M_A
-if /i "%MAINT_CHOICE%"=="B" goto M_B
-if /i "%MAINT_CHOICE%"=="C" goto M_C
-if /i "%MAINT_CHOICE%"=="D" goto M_D
+if /i "%MAINT_CHOICE%"=="10" goto M_10
+if /i "%MAINT_CHOICE%"=="11" goto M_11
+if /i "%MAINT_CHOICE%"=="12" goto M_12
+if /i "%MAINT_CHOICE%"=="13" goto M_13
+if /i "%MAINT_CHOICE%"=="A" goto M_10
+if /i "%MAINT_CHOICE%"=="B" goto M_11
+if /i "%MAINT_CHOICE%"=="C" goto M_12
+if /i "%MAINT_CHOICE%"=="D" goto M_13
 if "%MAINT_CHOICE%"=="0" goto :EOF
 goto MAINT_MENU
 
@@ -248,6 +252,7 @@ echo.
 pause
 goto MAINT_MENU
 
+:M_10
 :M_A
 cls
 echo.
@@ -264,6 +269,7 @@ echo.
 pause
 goto MAINT_MENU
 
+:M_11
 :M_B
 cls
 echo.
@@ -276,6 +282,7 @@ echo.
 pause
 goto MAINT_MENU
 
+:M_12
 :M_C
 cls
 echo.
@@ -295,6 +302,7 @@ echo.
 pause
 goto MAINT_MENU
 
+:M_13
 :M_D
 cls
 echo.

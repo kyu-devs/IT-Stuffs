@@ -1,5 +1,5 @@
 # ============================================================
-# KyuTools - Logon & Intrusion Audit Engine
+# ONYX IT DEPARTMENT - TECH TOOLS - Logon & Intrusion Audit Engine
 # All-green console output (color 0A)
 # ============================================================
 

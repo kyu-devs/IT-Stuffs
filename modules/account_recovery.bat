@@ -2,7 +2,7 @@
 setlocal EnableDelayedExpansion
 
 :: ============================================================
-::  KyuTools v1.1 - Account Recovery & Access Guide Module
+::  ONYX IT DEPARTMENT TECH TOOLS - Account Recovery & Access Guide Module
 ::  File: modules\account_recovery.bat
 ::
 ::  Description:
@@ -20,7 +20,7 @@ setlocal EnableDelayedExpansion
 :RECOVERY_MENU
 cls
 mode con: cols=100 lines=45 >nul 2>&1
-title KyuTools - Account Recovery and Access Guide
+title ONYX IT DEPARTMENT - TECH TOOLS - Account Recovery and Access Guide
 color 0A
 
 echo.
@@ -393,7 +393,7 @@ echo   ^|   [4] Local Account Recovery Guide                                    
 echo   +------------------------------------------------------------------------------------------------+
 echo.
 echo   [!] Security Notice:
-echo       In compliance with cybersecurity best practices and system integrity standards, KyuTools
+echo       In compliance with cybersecurity best practices and system integrity standards, ONYX IT DEPARTMENT TECH TOOLS
 echo       does not extract, crack, or bypass password hashes. All procedures below use supported,
 echo       official Windows recovery pathways.
 echo.
@@ -822,7 +822,7 @@ echo   === STEP 2: Select Destination Backup Directory ===
 echo   (Ensure target drive has adequate free storage space)
 echo.
 set "DST_DIR="
-set /p "DST_DIR=    Enter full Destination path (e.g. E:\Backup_KyuTools): "
+set /p "DST_DIR=    Enter full Destination path (e.g. E:\Backup_OnyxTools): "
 if "%DST_DIR%"=="" goto DATA_BACKUP
 
 echo.

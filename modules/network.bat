@@ -2,13 +2,13 @@
 
 setlocal EnableDelayedExpansion
 :: ============================================================
-::  KyuTools - Network & Internet Optimizer Module
+::  ONYX IT DEPARTMENT TECH TOOLS - Network & Internet Optimizer Module
 :: ============================================================
 
 :NETWORK_MENU
 cls
 mode con: cols=100 lines=45
-title  KyuTools - Network and Internet Optimizer
+title  ONYX IT DEPARTMENT TECH TOOLS - Network and Internet Optimizer
 color 0A
 
 echo.
@@ -25,10 +25,10 @@ echo   ^|   [6]   Ping / Latency Test                                           
 echo   ^|   [7]   DNS Speed Benchmark                                                                   ^|
 echo   ^|   [8]   Change DNS Server                                                                     ^|
 echo   ^|   [9]   Show Network Adapters and IP Info                                                     ^|
-echo   ^|   [A]   Disable IPv6                                                                          ^|
-echo   ^|   [B]   Enable IPv6                                                                           ^|
-echo   ^|   [C]   View Active Connections  (netstat)                                                    ^|
-echo   ^|   [D]   Internet Speed Test  (opens browser)                                                  ^|
+echo   ^|   [10]  Disable IPv6                                                                          ^|
+echo   ^|   [11]  Enable IPv6                                                                           ^|
+echo   ^|   [12]  View Active Connections  (netstat)                                                    ^|
+echo   ^|   [13]  Internet Speed Test  (opens browser)                                                  ^|
 echo   ^|   [0]   Back to Main Menu                                                                     ^|
 echo   ^|                                                                                                ^|
 echo   +------------------------------------------------------------------------------------------------+
@@ -45,10 +45,14 @@ if /i "%NET_CHOICE%"=="6" goto NET_6
 if /i "%NET_CHOICE%"=="7" goto NET_7
 if /i "%NET_CHOICE%"=="8" goto NET_8
 if /i "%NET_CHOICE%"=="9" goto NET_9
-if /i "%NET_CHOICE%"=="A" goto NET_A
-if /i "%NET_CHOICE%"=="B" goto NET_B
-if /i "%NET_CHOICE%"=="C" goto NET_C
-if /i "%NET_CHOICE%"=="D" goto NET_D
+if /i "%NET_CHOICE%"=="10" goto NET_10
+if /i "%NET_CHOICE%"=="11" goto NET_11
+if /i "%NET_CHOICE%"=="12" goto NET_12
+if /i "%NET_CHOICE%"=="13" goto NET_13
+if /i "%NET_CHOICE%"=="A" goto NET_10
+if /i "%NET_CHOICE%"=="B" goto NET_11
+if /i "%NET_CHOICE%"=="C" goto NET_12
+if /i "%NET_CHOICE%"=="D" goto NET_13
 if "%NET_CHOICE%"=="0" goto :EOF
 goto NETWORK_MENU
 
@@ -249,6 +253,7 @@ echo.
 pause
 goto NETWORK_MENU
 
+:NET_10
 :NET_A
 cls
 echo.
@@ -263,6 +268,7 @@ echo.
 pause
 goto NETWORK_MENU
 
+:NET_11
 :NET_B
 cls
 echo.
@@ -277,6 +283,7 @@ echo.
 pause
 goto NETWORK_MENU
 
+:NET_12
 :NET_C
 cls
 echo.
@@ -289,6 +296,7 @@ echo.
 pause
 goto NETWORK_MENU
 
+:NET_13
 :NET_D
 cls
 echo.

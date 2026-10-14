@@ -2,7 +2,7 @@
 setlocal EnableDelayedExpansion
 
 :: ============================================================
-::  KyuTools v1.1 - Windows Utility Toolkit
+::  ONYX IT DEPARTMENT TECH TOOLS v1.1 - Windows Utility Toolkit
 ::  Main Launcher
 :: ============================================================
 
@@ -20,7 +20,7 @@ if %errorLevel% NEQ 0 (
 
 :: == Window setup ===========================================
 mode con: cols=100 lines=45
-title KyuTools v1.1 - Windows Utility Toolkit
+title ONYX IT DEPARTMENT - TECH TOOLS
 color 0A
 
 :: ============================================================
@@ -38,7 +38,8 @@ echo                                   LOADING SECURITY PROTOCOL... OK
 echo.
 echo                   +---------------------------------------------------------+
 echo                   ^|                                                         ^|
-echo                   ^|                 K Y U T O O L S   v 1 . 1               ^|
+echo                   ^|               ONYX IT DEPARMENT TECH TOOLS
+echo                                              v 1 . 1                         ^|
 echo                   ^|                 -------------------------               ^|
 echo                   ^|                 AUTHORIZED PERSONNEL ONLY               ^|
 echo                   ^|                                                         ^|
@@ -66,12 +67,12 @@ color 0A
 echo.
 echo   +-------------------------------------------------------------------------------------------------+
 echo   ^|                                                                                                 ^|
-echo   ^|                                    K Y U T O O L S   v 1 . 1                                    ^|
-echo   ^|                                 Windows Utility Toolkit by Kyu                                  ^|
+echo   ^|                            ONYX IT DEPARTMENT TECH TOOLS   v 1 . 1                              ^|
+echo   ^|                                    Windows Utility Toolkit                                      ^|
 echo   ^|                                                                                                 ^|
 echo   +------------------------------------------------+------------------------------------------------+
 echo   ^|                                                ^|                                                ^|
-echo   ^|   [1]   Windows Activation and License         ^|   Office Installer, Scrubber, KMS, Ohook       ^|
+echo   ^|   [1]   Windows Activation and Offices         ^|   Office Installer, Scrubber, KMS, Ohook       ^|
 echo   ^|   [2]   Network and Internet Optimizer         ^|   DNS flush, reset, IP renew, DNS changer      ^|
 echo   ^|   [3]   System Maintenance and Diagnostics     ^|   SFC, DISM, cleanup, disk health, CHKDSK      ^|
 echo   ^|   [4]   System Information                     ^|   CPU, RAM, GPU, disk info, export report      ^|
@@ -85,7 +86,7 @@ echo   ^|   [11]  Security and Intrusion Audit           ^|   Network connection
 echo   ^|   [12]  Windows All in One Utilities           ^|   Chris Titus Tech WinUtil (Install/Tweaks)    ^|
 echo   ^|   [13]  Account Recovery and Access Guide      ^|   Diagnose login, BitLocker, WinRE, backup     ^|
 echo   ^|   [14]  Custom Problem Solver                  ^|   Describe a problem, get step-by-step fixes   ^|
-echo   ^|   [15]  About KyuTools                         ^|                                                ^|
+echo   ^|   [15]  About ONYX IT DEPARTMENT TECH TOOLS    ^|                                                ^|
 echo   ^|   [0]   Exit                                   ^|                                                ^|
 echo   ^|                                                ^|                                                ^|
 echo   +------------------------------------------------+------------------------------------------------+
@@ -188,10 +189,10 @@ cls
 color 0A
 echo.
 echo   +-------------------------------------------------------------------------------------------------+
-echo   ^|                                         About KyuTools                                          ^|
+echo   ^|                                About Onyx IT Department Tools                                   ^|
 echo   +-------------------------------------------------------------------------------------------------+
 echo   ^|                                                                                                 ^|
-echo   ^|   KyuTools v1.1  -  Windows Utility Toolkit                                                     ^|
+echo   ^|   ONYX IT DEPARTMENT TECH TOOLS v1.1  -  Windows Utility Toolkit                                 ^|
 echo   ^|   A portable, password-protected, menu-driven CMD suite.                                        ^|
 echo   ^|   Created by Kyu (mong-g)  ^|  Contributor: themarneilx                                          ^|
 echo   ^|                                                                                                 ^|
@@ -221,7 +222,7 @@ cls
 color 0A
 echo.
 echo   +-------------------------------------------------------------------------------------------------+
-echo   ^|                    Thank you for using KyuTools.  Goodbye!                                      ^|
+echo   ^|                  Thank you for using Onyx IT Deparment Tech Tools.  Goodbye!                  ^|
 echo   +-------------------------------------------------------------------------------------------------+
 echo.
 timeout /t 2 /nobreak >nul

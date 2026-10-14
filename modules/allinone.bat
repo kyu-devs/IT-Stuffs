@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableDelayedExpansion
 :: ============================================================
-::  KyuTools - Windows All in One Utilities Module
+::  ONYX IT DEPARTMENT TECH TOOLS - Windows All in One Utilities Module
 :: ============================================================
 
 :: == Admin check (if executed directly) =======================
@@ -19,7 +19,7 @@ if %errorLevel% NEQ 0 (
 :ALLINONE_MENU
 cls
 mode con: cols=100 lines=45
-title  KyuTools - Windows All in One Utilities
+title  ONYX IT DEPARTMENT TECH TOOLS - Windows All in One Utilities
 color 0A
 
 echo.
