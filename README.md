@@ -75,6 +75,7 @@ Input characters are hidden from the console display during entry for security.
 ### 1. Windows Activation and License
 Located in [`modules/activation.bat`](modules/activation.bat):
 - **Install Office (Word, Excel, PowerPoint, Outlook Only)**: Downloads official Microsoft Click-to-Run deployment tools directly from Microsoft CDN and installs only core productivity apps (Word, Excel, PowerPoint, Outlook), automatically excluding bloatware (Access, Publisher, OneNote, Teams, OneDrive, Skype/Lync). Supports Office 2021, Office 2024, or Microsoft 365.
+- **Office Scrubber & Deep Removal**: Deep-cleans and completely wipes residual Microsoft 365 / Office installations, Click-to-Run services, leftover trial licenses, vNext subscription tokens, and registry entries (powered by integrated `OfficeScrubber.cmd` from official Microsoft SaRA OffScrub scripts). Essential for cleanly downgrading or switching from Microsoft 365 to Office 2021 without license conflict errors.
 - **Activation Status Check**: Checks license expiration and grace periods via `slmgr.vbs /xpr` and `/dli`.
 - **License Type Identification**: Inspects Windows edition, build number, serial number, and license channel (Retail, OEM, Volume).
 - **Product Key Entry**: Installs product keys (`slmgr /ipk`) and attempts online activation (`slmgr /ato`).
@@ -216,6 +217,8 @@ IT-Stuffs/
 ├── KyuTools.bat            # Main entrypoint, admin elevation, and navigation menu
 ├── fix_wmic.ps1            # Maintenance script updating deprecated WMIC calls to CIM
 ├── README.md               # Project documentation and feature reference
+├── bin/
+│   └── OfficeScrubber.cmd  # Standalone Microsoft Office deep removal & licensing scrubber
 └── modules/
     ├── pass.ps1            # Keystroke-masked password gate
     ├── activation.bat      # Windows and Office activation utilities

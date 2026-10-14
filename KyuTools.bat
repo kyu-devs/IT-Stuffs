@@ -71,7 +71,7 @@ echo   ^|                                 Windows Utility Toolkit by Kyu        
 echo   ^|                                                                                                 ^|
 echo   +------------------------------------------------+------------------------------------------------+
 echo   ^|                                                ^|                                                ^|
-echo   ^|   [1]   Windows Activation and License         ^|   Install Office (Word/Excel/PPT), KMS, Ohook  ^|
+echo   ^|   [1]   Windows Activation and License         ^|   Office Installer, Scrubber, KMS, Ohook       ^|
 echo   ^|   [2]   Network and Internet Optimizer         ^|   DNS flush, reset, IP renew, DNS changer      ^|
 echo   ^|   [3]   System Maintenance and Diagnostics     ^|   SFC, DISM, cleanup, disk health, CHKDSK      ^|
 echo   ^|   [4]   System Information                     ^|   CPU, RAM, GPU, disk info, export report      ^|

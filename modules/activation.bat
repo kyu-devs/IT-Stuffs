@@ -15,15 +15,16 @@ echo   +------------------------------------------------------------------------
 echo   ^|                       Windows Activation and License Tools                                    ^|
 echo   +------------------------------------------------------------------------------------------------+
 echo   ^|                                                                                                ^|
-echo   ^|   [1]   Install Office (Word, Excel, PowerPoint, Outlook)                                 ^|
-echo   ^|   [2]   Check Activation Status                                                               ^|
-echo   ^|   [3]   Check Windows License Type                                                            ^|
-echo   ^|   [4]   Activate Office with Ohook (Permanent - MAS)                                         ^|
-echo   ^|   [5]   Activate with Product Key (slmgr /ipk)                                                ^|
-echo   ^|   [6]   Rearm Evaluation License (extend trial)                                              ^|
-echo   ^|   [7]   Fix Activation Error 0xC004F074                                                      ^|
-echo   ^|   [8]   Fix Activation Error 0x8007007B                                                      ^|
-echo   ^|   [9]   View Full License Details (slmgr /dlv)                                               ^|
+echo   ^|   [1]   Install Office (Word, Excel, PowerPoint, Outlook Only)                                 ^|
+echo   ^|   [2]   Scrub Microsoft Office (Remove M365 / Clean Licenses)                                 ^|
+echo   ^|   [3]   Check Activation Status                                                               ^|
+echo   ^|   [4]   Check Windows License Type                                                            ^|
+echo   ^|   [5]   Activate Office with Ohook (Permanent - MAS)                                         ^|
+echo   ^|   [6]   Activate with Product Key (slmgr /ipk)                                                ^|
+echo   ^|   [7]   Rearm Evaluation License (extend trial)                                              ^|
+echo   ^|   [8]   Fix Activation Error 0xC004F074                                                      ^|
+echo   ^|   [9]   Fix Activation Error 0x8007007B                                                      ^|
+echo   ^|   [A]   View Full License Details (slmgr /dlv)                                                ^|
 echo   ^|   [0]   Back to Main Menu                                                                     ^|
 echo   ^|                                                                                                ^|
 echo   +------------------------------------------------------------------------------------------------+
@@ -33,14 +34,15 @@ set /p "ACT_CHOICE=    >> Select option: "
 if defined ACT_CHOICE set "ACT_CHOICE=!ACT_CHOICE: =!"
 
 if "%ACT_CHOICE%"=="1" goto ACT_INSTALL_OFFICE
-if "%ACT_CHOICE%"=="2" goto ACT_1
-if "%ACT_CHOICE%"=="3" goto ACT_2
-if "%ACT_CHOICE%"=="4" goto ACT_4
-if "%ACT_CHOICE%"=="5" goto ACT_3
-if "%ACT_CHOICE%"=="6" goto ACT_5
-if "%ACT_CHOICE%"=="7" goto ACT_6
-if "%ACT_CHOICE%"=="8" goto ACT_7
-if "%ACT_CHOICE%"=="9" goto ACT_8
+if "%ACT_CHOICE%"=="2" goto ACT_SCRUB_OFFICE
+if "%ACT_CHOICE%"=="3" goto ACT_1
+if "%ACT_CHOICE%"=="4" goto ACT_2
+if "%ACT_CHOICE%"=="5" goto ACT_4
+if "%ACT_CHOICE%"=="6" goto ACT_3
+if "%ACT_CHOICE%"=="7" goto ACT_5
+if "%ACT_CHOICE%"=="8" goto ACT_6
+if "%ACT_CHOICE%"=="9" goto ACT_7
+if /i "%ACT_CHOICE%"=="A" goto ACT_8
 if "%ACT_CHOICE%"=="0" goto :EOF
 goto ACTIVATION_MENU
 
@@ -166,7 +168,7 @@ if %INSTALL_STATUS% EQU 0 (
     echo   [+] Microsoft Office installation finished successfully!
     echo   [+] Word, Excel, PowerPoint, and Outlook are ready in your Start Menu.
     echo.
-    echo   [*] Tip: To permanently activate Office, choose Option [4] in this menu
+    echo   [*] Tip: To permanently activate Office, choose Option [5] in this menu
     echo       (Activate Office with Ohook - MAS Method).
 ) else (
     echo   [!] Installer exited with code %INSTALL_STATUS%.
@@ -176,7 +178,120 @@ echo.
 pause
 goto ACTIVATION_MENU
 
-:: == [2] Check Activation Status ==========================
+:: == [2] Scrub Microsoft Office (Remove M365 / Clean Licenses) ==
+:ACT_SCRUB_OFFICE
+cls
+echo.
+echo   +------------------------------------------------------------------------------------------------+
+echo   ^|   Microsoft Office Scrubber ^& Deep Removal                                                    ^|
+echo   +------------------------------------------------------------------------------------------------+
+echo.
+echo   Completely uninstalls Microsoft Office (M365, 2024, 2021, 2019, 2016) and removes conflicting
+echo   licenses, residual tokens, background services, and registry leftovers.
+echo.
+echo   Recommended when:
+echo     - Switching from Microsoft 365 to Office 2021 Pro Plus
+echo     - Resolving "Subscription Expired" or "Product Notice" errors
+echo     - Fixing corrupted or stuck Office installations
+echo.
+echo   Select Scrub Mode:
+echo     [1] Full Office C2R Scrub (Uninstalls M365/Office + wipes all licenses ^& tokens)
+echo     [2] Clean Licenses Only   (Cleans M365 vNext tokens ^& product keys, keeps apps)
+echo     [3] Launch Official Office Scrubber Menu (Full interactive tool)
+echo     [0] Back to Activation Menu
+echo.
+set "SCRUB_CHOICE="
+set /p "SCRUB_CHOICE=   >> Select option [0-3]: "
+if defined SCRUB_CHOICE set "SCRUB_CHOICE=!SCRUB_CHOICE: =!"
+if "%SCRUB_CHOICE%"=="0" goto ACTIVATION_MENU
+if "%SCRUB_CHOICE%"=="" goto ACTIVATION_MENU
+
+set "SCRUB_TOOL=%~dp0..\bin\OfficeScrubber.cmd"
+if not exist "!SCRUB_TOOL!" (
+    echo.
+    echo   [*] Office Scrubber not found locally. Downloading latest utility...
+    if not exist "%~dp0..\bin" mkdir "%~dp0..\bin" >nul 2>&1
+    curl.exe -L -# -o "!SCRUB_TOOL!" "https://raw.githubusercontent.com/abbodi1406/BatUtil/master/OfficeScrubber/OfficeScrubberAIO.cmd"
+)
+
+if not exist "!SCRUB_TOOL!" (
+    echo.
+    echo   [-] Failed to locate or download OfficeScrubber.cmd.
+    echo   [-] Please check your internet connection or place OfficeScrubber.cmd into the 'bin' folder.
+    echo.
+    pause
+    goto ACTIVATION_MENU
+)
+
+if "%SCRUB_CHOICE%"=="1" (
+    echo.
+    echo   [*] Closing background Office processes...
+    taskkill /f /im winword.exe /im excel.exe /im powerpnt.exe /im outlook.exe /im msaccess.exe /im onenote.exe /im lync.exe /im teams.exe /im officeclicktorun.exe /im integrator.exe >nul 2>&1
+    echo   [*] Starting Full Office Click-to-Run Scrub...
+    call "!SCRUB_TOOL!" /C
+    echo.
+    echo   [+] Full Office Scrub completed!
+    echo   [+] System is now ready for a clean installation of Office 2021 Pro Plus.
+    echo   [+] Tip: Select Option [1] in the Activation Menu to install Office 2021.
+    echo.
+    pause
+    goto ACTIVATION_MENU
+)
+
+if "%SCRUB_CHOICE%"=="2" (
+    echo.
+    echo   [*] Cleaning Office licenses and vNext subscription tokens...
+    taskkill /f /im winword.exe /im excel.exe /im powerpnt.exe /im outlook.exe /im officeclicktorun.exe >nul 2>&1
+    
+    :: Remove vNext license files and caches
+    attrib -R "%ProgramData%\Microsoft\Office\Licenses" >nul 2>&1
+    attrib -R "%ProgramData%\Microsoft\Licenses" >nul 2>&1
+    attrib -R "%LocalAppData%\Microsoft\Office\Licenses" >nul 2>&1
+    attrib -R "%LocalAppData%\Microsoft\Office\16.0\Licensing" >nul 2>&1
+    attrib -R "%LocalAppData%\Microsoft\IdentityCache" >nul 2>&1
+    attrib -R "%LocalAppData%\Microsoft\OneAuth" >nul 2>&1
+    rd /s /q "%ProgramData%\Microsoft\Office\Licenses" >nul 2>&1
+    rd /s /q "%ProgramData%\Microsoft\Licenses" >nul 2>&1
+    rd /s /q "%LocalAppData%\Microsoft\Office\Licenses" >nul 2>&1
+    rd /s /q "%LocalAppData%\Microsoft\Office\16.0\Licensing" >nul 2>&1
+    rd /s /q "%LocalAppData%\Microsoft\IdentityCache" >nul 2>&1
+    rd /s /q "%LocalAppData%\Microsoft\OneAuth" >nul 2>&1
+    
+    :: Clean vNext and identity registry entries
+    reg delete "HKCU\Software\Microsoft\Office\16.0\Common\Licensing" /f >nul 2>&1
+    reg delete "HKCU\Software\Microsoft\Office\16.0\Common\Identity" /f >nul 2>&1
+    reg delete "HKCU\Software\Microsoft\Office\16.0\Registration" /f >nul 2>&1
+    reg delete "HKLM\SOFTWARE\Microsoft\Office\ClickToRun\Configuration" /f /v SharedComputerLicensing >nul 2>&1
+    reg delete "HKLM\SOFTWARE\Microsoft\Office\ClickToRun\Configuration" /f /v productkeys >nul 2>&1
+
+    :: Uninstall leftover product keys via ospp.vbs
+    set "OSPP_PATH="
+    if exist "%ProgramFiles%\Microsoft Office\Office16\ospp.vbs" set "OSPP_PATH=%ProgramFiles%\Microsoft Office\Office16\ospp.vbs"
+    if exist "%ProgramFiles(x86)%\Microsoft Office\Office16\ospp.vbs" set "OSPP_PATH=%ProgramFiles(x86)%\Microsoft Office\Office16\ospp.vbs"
+    if defined OSPP_PATH (
+        echo   [*] Checking for installed partial product keys...
+        for /f "tokens=3 delims= " %%k in ('cscript //nologo "!OSPP_PATH!" /dstatus 2^>nul ^| findstr /i "Last 5 characters of installed product key:"') do (
+            echo   [*] Uninstalling leftover key: %%k
+            cscript //nologo "!OSPP_PATH!" /unpkey:%%k >nul 2>&1
+        )
+    )
+    echo.
+    echo   [+] Leftover Office licenses and identity tokens cleaned!
+    echo   [+] You can now activate Office using Option [5] (Ohook MAS).
+    echo.
+    pause
+    goto ACTIVATION_MENU
+)
+
+if "%SCRUB_CHOICE%"=="3" (
+    cls
+    call "!SCRUB_TOOL!"
+    goto ACTIVATION_MENU
+)
+
+goto ACTIVATION_MENU
+
+:: == [3] Check Activation Status ==========================
 :ACT_1
 cls
 echo.
@@ -326,7 +441,7 @@ echo   [*] Restarting licensing service...
 net stop sppsvc /y >nul 2>&1
 net start sppsvc >nul 2>&1
 echo.
-echo   [+] Done. Re-enter your product key using Option [5].
+echo   [+] Done. Re-enter your product key using Option [6].
 echo.
 pause
 goto ACTIVATION_MENU
