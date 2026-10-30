@@ -30,15 +30,15 @@ echo.
 set "REM_CHOICE="
 set /p "REM_CHOICE=    >> Select option: "
 
-if "%REM_CHOICE%"=="1" goto R_1
-if "%REM_CHOICE%"=="2" goto R_2
-if "%REM_CHOICE%"=="3" goto R_3
-if "%REM_CHOICE%"=="4" goto R_4
-if "%REM_CHOICE%"=="5" goto R_5
-if "%REM_CHOICE%"=="6" goto R_6
-if "%REM_CHOICE%"=="7" goto R_7
-if "%REM_CHOICE%"=="8" goto R_8
-if "%REM_CHOICE%"=="0" goto :EOF
+if "!REM_CHOICE!"=="1" goto R_1
+if "!REM_CHOICE!"=="2" goto R_2
+if "!REM_CHOICE!"=="3" goto R_3
+if "!REM_CHOICE!"=="4" goto R_4
+if "!REM_CHOICE!"=="5" goto R_5
+if "!REM_CHOICE!"=="6" goto R_6
+if "!REM_CHOICE!"=="7" goto R_7
+if "!REM_CHOICE!"=="8" goto R_8
+if "!REM_CHOICE!"=="0" goto :EOF
 goto REMOTE_MENU
 
 :R_1
@@ -54,66 +54,27 @@ start quickassist.exe
 goto REMOTE_MENU
 
 :R_3
-cls
-echo.
-echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Enable Remote Desktop on THIS PC                                                            ^|
-echo   +------------------------------------------------------------------------------------------------+
-echo.
-echo   [*] Enabling RDP in Registry...
-reg add "HKLM\System\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f >nul
-echo   [*] Allowing RDP through Windows Firewall...
-netsh advfirewall firewall set rule group="remote desktop" new enable=Yes >nul 2>&1
-echo.
-echo   [+] Remote Desktop is now ENABLED.
-echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action RemoteEnable
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
 pause
 goto REMOTE_MENU
 
 :R_4
-cls
-echo.
-echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Ping Remote PC                                                                              ^|
-echo   +------------------------------------------------------------------------------------------------+
-echo.
-set "TARGET="
-set /p "TARGET=   >> Enter IP Address or PC Name: "
-if "%TARGET%"=="" goto REMOTE_MENU
-echo.
-ping %TARGET%
-echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action RemotePing
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
 pause
 goto REMOTE_MENU
 
 :R_5
-cls
-echo.
-echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Browse Remote C$ Drive                                                                      ^|
-echo   +------------------------------------------------------------------------------------------------+
-echo.
-set "TARGET="
-set /p "TARGET=   >> Enter IP Address or PC Name: "
-if "%TARGET%"=="" goto REMOTE_MENU
-echo.
-echo   [*] Attempting to open \\%TARGET%\c$ ...
-start \\%TARGET%\c$
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action RemoteShare
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
+pause
 goto REMOTE_MENU
 
 :R_6
-cls
-echo.
-echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Remote Computer Management                                                                  ^|
-echo   +------------------------------------------------------------------------------------------------+
-echo.
-set "TARGET="
-set /p "TARGET=   >> Enter IP Address or PC Name: "
-if "%TARGET%"=="" goto REMOTE_MENU
-echo.
-echo   [*] Launching compmgmt.msc for %TARGET%...
-start compmgmt.msc /computer:\\%TARGET%
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action RemoteManage
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
+pause
 goto REMOTE_MENU
 
 :R_7
@@ -131,21 +92,18 @@ goto REMOTE_MENU
 cls
 echo.
 echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Network IP Scanner (Active Devices)                                                         ^|
+echo   ^|   Network IP Scanner - Active Devices on Local Network                                        ^|
 echo   +------------------------------------------------------------------------------------------------+
 echo.
-echo   [*] Scanning Local Network via ARP...
-echo   [*] Resolving Hostnames and Logged-In Users (This may take a few minutes)...
+echo   [*] Detecting local subnet via ARP cache...
+echo   [*] Resolving Computer Names and Logged-In Users per device...
+echo   [*] This may take 1-3 minutes depending on network size.
 echo.
-powershell -NoProfile -Command "arp -a | Select-String 'dynamic' | ForEach-Object { $ip = $_.ToString().Trim() -replace '\s+.*',''; $hostName = ''; try { $hostName = [System.Net.Dns]::GetHostEntry($ip).HostName.Split('.')[0] } catch { }; if (-not $hostName) { $hostName = 'Unknown Device' }; $user = (quser /server:$ip 2>$null | Select-Object -Skip 1 | ForEach-Object { if ($_.Length -ge 22) { $u = $_.Substring(0, 22).Trim() -replace '^>', '' } else { $u = $_.Trim() -replace '^>', '' }; $fn = ''; try { $adsi = [adsi]\"WinNT://$ip/$u,user\"; if ($adsi.FullName) { $fn = $adsi.FullName.ToString() } } catch {}; if ($fn) { \"$fn ($u)\" } else { $u } }) -join ', '; if (-not $user) { $user = 'N/A' }; Write-Host \"   [+] $ip  -  $hostName  -  User: $user\" }"
-echo.
-echo   [*] Scan Complete.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0network_scan.ps1"
+
 echo.
 :R_8_PING
-set "PING_TARGET="
-set /p "PING_TARGET=   >> Enter an IP Address from above to ping (or press Enter to exit): "
-if "%PING_TARGET%"=="" goto REMOTE_MENU
-echo.
-ping %PING_TARGET%
-echo.
-goto R_8_PING
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action RemotePing
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
+pause
+goto REMOTE_MENU

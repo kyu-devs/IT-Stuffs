@@ -1,4 +1,4 @@
-# ============================================================
+﻿# ============================================================
 # ONYX IT DEPARTMENT - TECH TOOLS - Logon & Intrusion Audit Engine
 # All-green console output (color 0A)
 # ============================================================
@@ -315,19 +315,24 @@ function Start-LiveLogonMonitor {
     Write-Output ""
 
     $lastCheck = Get-Date
+    $lastRecord = 0
 
     while ($true) {
         Start-Sleep -Seconds 2
         try {
+            $windowEnd = Get-Date
             $newEvents = @(Get-WinEvent -FilterHashtable @{
                 LogName   = 'Security'
                 Id        = @(4625, 4624, 4740)
                 StartTime = $lastCheck
+                EndTime   = $windowEnd
             } -ErrorAction SilentlyContinue)
 
-            $lastCheck = Get-Date
+            $lastCheck = $windowEnd.AddSeconds(-1)
 
-            foreach ($e in $newEvents) {
+            foreach ($e in @($newEvents | Sort-Object RecordId)) {
+                if ($e.RecordId -le $lastRecord) { continue }
+                $lastRecord = $e.RecordId
                 [xml]$xml = $e.ToXml()
                 $map = @{}
                 foreach ($d in $xml.Event.EventData.Data) {

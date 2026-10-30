@@ -1,4 +1,4 @@
-# ============================================================
+﻿# ============================================================
 # ONYX IT DEPARTMENT TECH TOOLS - Cloud Web Bootstrapper
 # Enables: irm <URL> | iex
 # ============================================================
@@ -17,22 +17,28 @@ Write-Host ""
 
 # Target GitHub repository archive URL
 $RepoZip = "https://github.com/kyu-devs/IT-Stuffs/archive/refs/heads/main.zip"
-$TempDir = Join-Path $env:TEMP "KyuTools_Cloud"
-$ZipFile = Join-Path $env:TEMP "KyuTools.zip"
+$TempDir = Join-Path ([IO.Path]::GetTempPath()) ("KyuTools_Cloud_" + [guid]::NewGuid().ToString('N'))
+$ZipFile = $TempDir + '.zip'
 
 try {
     Write-Host "   [*] Downloading latest ONYX IT DEPARTMENT TECH TOOLS from GitHub..." -ForegroundColor Green
     Invoke-WebRequest -Uri $RepoZip -OutFile $ZipFile -UseBasicParsing
 
     Write-Host "   [*] Extracting files..." -ForegroundColor Green
-    if (Test-Path $TempDir) { Remove-Item -Path $TempDir -Recurse -Force -ErrorAction SilentlyContinue }
     Expand-Archive -Path $ZipFile -DestinationPath $TempDir -Force
-    Remove-Item -Path $ZipFile -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $ZipFile -Force -ErrorAction Stop
 
     # Find KyuTools.bat inside the extracted directory structure
     $Launcher = Get-ChildItem -Path $TempDir -Recurse -Filter "KyuTools.bat" | Select-Object -First 1
 
     if ($Launcher) {
+        Write-Host "   Source: $RepoZip" -ForegroundColor Yellow
+        Write-Host "   Extracted code: $TempDir" -ForegroundColor Yellow
+        Write-Host "   Review this downloaded code before granting administrator access." -ForegroundColor Yellow
+        if ((Read-Host "   Type YES to launch the downloaded toolkit") -cne 'YES') {
+            Write-Host '   Launch cancelled. Downloaded files were retained for review.'
+            return
+        }
         Write-Host "   [*] Launching ONYX IT DEPARTMENT TECH TOOLS elevated..." -ForegroundColor Green
         Start-Process cmd -ArgumentList "/c `"$($Launcher.FullName)`"" -Verb RunAs
     } else {
@@ -40,4 +46,5 @@ try {
     }
 } catch {
     Write-Host "   [-] Failed to launch ONYX IT DEPARTMENT TECH TOOLS: $($_.Exception.Message)" -ForegroundColor Red
+    throw
 }

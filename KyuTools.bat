@@ -7,14 +7,15 @@ setlocal EnableDelayedExpansion
 :: ============================================================
 
 :: == Admin check ============================================
-net session >nul 2>&1
+powershell -NoProfile -Command "$id=[Security.Principal.WindowsIdentity]::GetCurrent(); if (([Security.Principal.WindowsPrincipal]::new($id)).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { exit 0 } else { exit 1 }" >nul 2>&1
 if %errorLevel% NEQ 0 (
     cls
     echo.
     echo   [!] Administrator rights required.
     echo   [*] Relaunching as Administrator...
     timeout /t 2 /nobreak >nul
-    powershell -Command "Start-Process cmd -ArgumentList '/c \"%~f0\"' -Verb RunAs"
+    set "KYUTOOLS_LAUNCHER=%~f0"
+    powershell -NoProfile -Command "Start-Process -FilePath $env:ComSpec -ArgumentList ('/d /c '+[char]34+$env:KYUTOOLS_LAUNCHER+[char]34) -Verb RunAs"
     exit /b
 )
 
@@ -72,7 +73,7 @@ echo   ^|                                    Windows Utility Toolkit            
 echo   ^|                                                                                                 ^|
 echo   +------------------------------------------------+------------------------------------------------+
 echo   ^|                                                ^|                                                ^|
-echo   ^|   [1]   Windows Activation and Offices         ^|   Office Installer, Scrubber, KMS, Ohook       ^|
+echo   ^|   [1]   Windows Activation and Offices         ^|   Licensed install, cleanup, activation help   ^|
 echo   ^|   [2]   Network and Internet Optimizer         ^|   DNS flush, reset, IP renew, DNS changer      ^|
 echo   ^|   [3]   System Maintenance and Diagnostics     ^|   SFC, DISM, cleanup, disk health, CHKDSK      ^|
 echo   ^|   [4]   System Information                     ^|   CPU, RAM, GPU, disk info, export report      ^|
@@ -94,22 +95,22 @@ echo.
 set CHOICE=
 set /p CHOICE=    Select option: 
 
-if "%CHOICE%"=="1" goto LOAD_1
-if "%CHOICE%"=="2" goto LOAD_2
-if "%CHOICE%"=="3" goto LOAD_3
-if "%CHOICE%"=="4" goto LOAD_4
-if "%CHOICE%"=="5" goto LOAD_5
-if "%CHOICE%"=="6" goto LOAD_6
-if "%CHOICE%"=="7" goto LOAD_7
-if "%CHOICE%"=="8" goto LOAD_8
-if "%CHOICE%"=="9" goto LOAD_9
-if "%CHOICE%"=="10" goto LOAD_10
-if "%CHOICE%"=="11" goto LOAD_11
-if "%CHOICE%"=="12" goto LOAD_12
-if "%CHOICE%"=="13" goto LOAD_13
-if "%CHOICE%"=="14" goto LOAD_14
-if "%CHOICE%"=="15" goto ABOUT
-if "%CHOICE%"=="0" goto BYE
+if "!CHOICE!"=="1" goto LOAD_1
+if "!CHOICE!"=="2" goto LOAD_2
+if "!CHOICE!"=="3" goto LOAD_3
+if "!CHOICE!"=="4" goto LOAD_4
+if "!CHOICE!"=="5" goto LOAD_5
+if "!CHOICE!"=="6" goto LOAD_6
+if "!CHOICE!"=="7" goto LOAD_7
+if "!CHOICE!"=="8" goto LOAD_8
+if "!CHOICE!"=="9" goto LOAD_9
+if "!CHOICE!"=="10" goto LOAD_10
+if "!CHOICE!"=="11" goto LOAD_11
+if "!CHOICE!"=="12" goto LOAD_12
+if "!CHOICE!"=="13" goto LOAD_13
+if "!CHOICE!"=="14" goto LOAD_14
+if "!CHOICE!"=="15" goto ABOUT
+if "!CHOICE!"=="0" goto BYE
 goto MAIN_MENU
 
 :LOAD_1

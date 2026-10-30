@@ -25,7 +25,7 @@ echo   ^|   [7]   Hide System Files  (reverse)                                  
 echo   ^|   [8]   View SFC / CBS Log                                                                   ^|
 echo   ^|   [9]   Open Disk Management                                                                  ^|
 echo   ^|   [10]  Create Symbolic Link                                                                  ^|
-echo   ^|   [11]  File Hash Checker  (MD5 / SHA256 / SHA1)                                             ^|
+echo   ^|   [11]  File Hash Checker (SHA256)                                                            ^|
 echo   ^|   [12]  Find Hidden Files on a Drive                                                          ^|
 echo   ^|   [0]   Back to Main Menu                                                                     ^|
 echo   ^|                                                                                                ^|
@@ -34,22 +34,22 @@ echo.
 set "DISK_CHOICE="
 set /p "DISK_CHOICE=    >> Select option: "
 
-if /i "%DISK_CHOICE%"=="1" goto D_1
-if /i "%DISK_CHOICE%"=="2" goto D_2
-if /i "%DISK_CHOICE%"=="3" goto D_3
-if /i "%DISK_CHOICE%"=="4" goto D_4
-if /i "%DISK_CHOICE%"=="5" goto D_5
-if /i "%DISK_CHOICE%"=="6" goto D_6
-if /i "%DISK_CHOICE%"=="7" goto D_7
-if /i "%DISK_CHOICE%"=="8" goto D_8
-if /i "%DISK_CHOICE%"=="9" goto D_9
-if /i "%DISK_CHOICE%"=="10" goto D_10
-if /i "%DISK_CHOICE%"=="11" goto D_11
-if /i "%DISK_CHOICE%"=="12" goto D_12
-if /i "%DISK_CHOICE%"=="A" goto D_10
-if /i "%DISK_CHOICE%"=="B" goto D_11
-if /i "%DISK_CHOICE%"=="C" goto D_12
-if "%DISK_CHOICE%"=="0" goto :EOF
+if /i "!DISK_CHOICE!"=="1" goto D_1
+if /i "!DISK_CHOICE!"=="2" goto D_2
+if /i "!DISK_CHOICE!"=="3" goto D_3
+if /i "!DISK_CHOICE!"=="4" goto D_4
+if /i "!DISK_CHOICE!"=="5" goto D_5
+if /i "!DISK_CHOICE!"=="6" goto D_6
+if /i "!DISK_CHOICE!"=="7" goto D_7
+if /i "!DISK_CHOICE!"=="8" goto D_8
+if /i "!DISK_CHOICE!"=="9" goto D_9
+if /i "!DISK_CHOICE!"=="10" goto D_10
+if /i "!DISK_CHOICE!"=="11" goto D_11
+if /i "!DISK_CHOICE!"=="12" goto D_12
+if /i "!DISK_CHOICE!"=="A" goto D_10
+if /i "!DISK_CHOICE!"=="B" goto D_11
+if /i "!DISK_CHOICE!"=="C" goto D_12
+if "!DISK_CHOICE!"=="0" goto :EOF
 goto DISK_MENU
 
 :D_1
@@ -65,20 +65,8 @@ pause
 goto DISK_MENU
 
 :D_2
-cls
-echo.
-echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Find Largest Files                                                                          ^|
-echo   +------------------------------------------------------------------------------------------------+
-echo.
-echo   [*] Attached Storage Drives (HDD/SSD/USB):
-powershell -NoProfile -Command "Get-Volume | Where-Object DriveLetter | Format-Table DriveLetter, FileSystemLabel, DriveType -AutoSize | Out-String -Stream | Select-String -Pattern '\S'"
-echo.
-echo.
-echo   [*] Scanning all available drives... this may take a moment.
-echo.
-powershell -NoProfile -Command "Get-Volume | Where-Object DriveLetter | ForEach-Object { Write-Host ('`n--- Largest Files on Drive ' + $_.DriveLetter + ' ---') -ForegroundColor Cyan; Get-ChildItem -Path ($_.DriveLetter + ':\') -Recurse -ErrorAction SilentlyContinue | Sort-Object Length -Descending | Select-Object -First 20 | Format-Table FullName,@{N='Size_MB';E={[math]::Round($_.Length/1MB,2)}} -AutoSize }"
-echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action DiskLargest
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
 pause
 goto DISK_MENU
 
@@ -96,75 +84,26 @@ pause
 goto DISK_MENU
 
 :D_4
-cls
-echo.
-echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Defragment / Optimize Drive                                                                 ^|
-echo   +------------------------------------------------------------------------------------------------+
-echo.
-set "DEFRAG_DRIVE="
-set /p "DEFRAG_DRIVE=   >> Drive letter (Enter for C): "
-if "%DEFRAG_DRIVE%"=="" set "DEFRAG_DRIVE=C"
-echo.
-echo   [*] Analyzing %DEFRAG_DRIVE%:...
-defrag %DEFRAG_DRIVE%: /A /U /V
-echo.
-set "DO_DEFRAG="
-set /p "DO_DEFRAG=   >> Run full optimization now? (Y/N): "
-if /i "%DO_DEFRAG%"=="Y" defrag %DEFRAG_DRIVE%: /U /V
-echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action DiskOptimize
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
 pause
 goto DISK_MENU
 
 :D_5
-cls
-echo.
-echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Take Ownership of File or Folder                                                            ^|
-echo   +------------------------------------------------------------------------------------------------+
-echo.
-set "OWN_PATH="
-set /p "OWN_PATH=   >> Enter full path: "
-if "%OWN_PATH%"=="" goto DISK_MENU
-takeown /f "%OWN_PATH%" /r /d Y >nul 2>&1
-icacls "%OWN_PATH%" /grant %username%:F /t /c >nul 2>&1
-echo   [+] Ownership granted to: %username%
-echo       Path: %OWN_PATH%
-echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action DiskOwnership
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
 pause
 goto DISK_MENU
 
 :D_6
-cls
-echo.
-echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Show Hidden Files in Explorer                                                               ^|
-echo   +------------------------------------------------------------------------------------------------+
-echo.
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v Hidden /t REG_DWORD /d 1 /f >nul
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v ShowSuperHidden /t REG_DWORD /d 1 /f >nul
-echo   [+] Hidden files will now be visible.
-set "RESTART="
-set /p "RESTART=   >> Restart Explorer now? (Y/N): "
-if /i "%RESTART%"=="Y" (
-    taskkill /f /im explorer.exe >nul
-    start explorer.exe
-)
-echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action DiskHidden
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
 pause
 goto DISK_MENU
 
 :D_7
-cls
-echo.
-echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Hide System Files                                                                           ^|
-echo   +------------------------------------------------------------------------------------------------+
-echo.
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v Hidden /t REG_DWORD /d 2 /f >nul
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v ShowSuperHidden /t REG_DWORD /d 0 /f >nul
-echo   [+] Hidden files concealed.
-echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action DiskHide
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
 pause
 goto DISK_MENU
 
@@ -199,52 +138,26 @@ pause
 goto DISK_MENU
 
 :D_10
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action DiskLink
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
+pause
+goto DISK_MENU
+
 :D_A
-cls
-echo.
-echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Create Symbolic Link                                                                        ^|
-echo   +------------------------------------------------------------------------------------------------+
-echo.
-set "LINK_PATH="
-set "TARGET_PATH="
-set /p "LINK_PATH=   >> New link path  (e.g. C:\MyLink):  "
-set /p "TARGET_PATH=   >> Target path   (e.g. D:\Folder):  "
-if "%LINK_PATH%"=="" goto DISK_MENU
-if "%TARGET_PATH%"=="" goto DISK_MENU
-if exist "%TARGET_PATH%\" (
-    mklink /D "%LINK_PATH%" "%TARGET_PATH%"
-) else (
-    mklink "%LINK_PATH%" "%TARGET_PATH%"
-)
-echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action DiskLink
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
 pause
 goto DISK_MENU
 
 :D_11
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action DiskHash
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
+pause
+goto DISK_MENU
+
 :D_B
-cls
-echo.
-echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   File Hash Checker                                                                           ^|
-echo   +------------------------------------------------------------------------------------------------+
-echo.
-set "HASH_FILE="
-set /p "HASH_FILE=   >> Enter file path: "
-if "%HASH_FILE%"=="" goto DISK_MENU
-if not exist "%HASH_FILE%" (
-    echo   [!] File not found.
-    pause
-    goto DISK_MENU
-)
-echo.
-echo   [ MD5 ]
-certutil -hashfile "%HASH_FILE%" MD5 | findstr /v "hash\|CertUtil"
-echo   [ SHA256 ]
-certutil -hashfile "%HASH_FILE%" SHA256 | findstr /v "hash\|CertUtil"
-echo   [ SHA1 ]
-certutil -hashfile "%HASH_FILE%" SHA1 | findstr /v "hash\|CertUtil"
-echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action DiskHash
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
 pause
 goto DISK_MENU
 

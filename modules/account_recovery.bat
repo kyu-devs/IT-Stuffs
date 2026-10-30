@@ -44,16 +44,16 @@ echo.
 set "REC_CHOICE="
 set /p "REC_CHOICE=    >> Select option: "
 
-if "%REC_CHOICE%"=="1" goto DIAGNOSE_LOGIN
-if "%REC_CHOICE%"=="2" goto MSA_RECOVERY
-if "%REC_CHOICE%"=="3" goto PIN_RECOVERY
-if "%REC_CHOICE%"=="4" goto LOCAL_RECOVERY
-if "%REC_CHOICE%"=="5" goto LOCKOUT_DIAG
-if "%REC_CHOICE%"=="6" goto BITLOCKER_ASSIST
-if "%REC_CHOICE%"=="7" goto OFFLINE_DETECT
-if "%REC_CHOICE%"=="8" goto DATA_BACKUP
-if "%REC_CHOICE%"=="9" goto WINRE_GUIDE
-if "%REC_CHOICE%"=="0" goto :EOF
+if "!REC_CHOICE!"=="1" goto DIAGNOSE_LOGIN
+if "!REC_CHOICE!"=="2" goto MSA_RECOVERY
+if "!REC_CHOICE!"=="3" goto PIN_RECOVERY
+if "!REC_CHOICE!"=="4" goto LOCAL_RECOVERY
+if "!REC_CHOICE!"=="5" goto LOCKOUT_DIAG
+if "!REC_CHOICE!"=="6" goto BITLOCKER_ASSIST
+if "!REC_CHOICE!"=="7" goto OFFLINE_DETECT
+if "!REC_CHOICE!"=="8" goto DATA_BACKUP
+if "!REC_CHOICE!"=="9" goto WINRE_GUIDE
+if "!REC_CHOICE!"=="0" goto :EOF
 goto RECOVERY_MENU
 
 
@@ -82,13 +82,13 @@ echo.
 set "DIAG_CHOICE="
 set /p "DIAG_CHOICE=    >> Select symptom: "
 
-if "%DIAG_CHOICE%"=="1" goto DIAG_PWD
-if "%DIAG_CHOICE%"=="2" goto DIAG_PIN
-if "%DIAG_CHOICE%"=="3" goto DIAG_LOCK
-if "%DIAG_CHOICE%"=="4" goto DIAG_PROF
-if "%DIAG_CHOICE%"=="5" goto DIAG_BOOT
-if "%DIAG_CHOICE%"=="6" goto DIAG_KBD
-if "%DIAG_CHOICE%"=="0" goto RECOVERY_MENU
+if "!DIAG_CHOICE!"=="1" goto DIAG_PWD
+if "!DIAG_CHOICE!"=="2" goto DIAG_PIN
+if "!DIAG_CHOICE!"=="3" goto DIAG_LOCK
+if "!DIAG_CHOICE!"=="4" goto DIAG_PROF
+if "!DIAG_CHOICE!"=="5" goto DIAG_BOOT
+if "!DIAG_CHOICE!"=="6" goto DIAG_KBD
+if "!DIAG_CHOICE!"=="0" goto RECOVERY_MENU
 goto DIAGNOSE_LOGIN
 
 :DIAG_PWD
@@ -263,9 +263,9 @@ echo.
 set "MSA_ACT="
 set /p "MSA_ACT=    >> Select action [0-2]: "
 
-if "%MSA_ACT%"=="1" goto MSA_TEST_NET
-if "%MSA_ACT%"=="2" goto MSA_OPEN_URL
-if "%MSA_ACT%"=="0" goto RECOVERY_MENU
+if "!MSA_ACT!"=="1" goto MSA_TEST_NET
+if "!MSA_ACT!"=="2" goto MSA_OPEN_URL
+if "!MSA_ACT!"=="0" goto RECOVERY_MENU
 goto MSA_RECOVERY
 
 :MSA_TEST_NET
@@ -344,16 +344,16 @@ echo.
 set "PIN_ACT="
 set /p "PIN_ACT=    >> Select action [0-2]: "
 
-if "%PIN_ACT%"=="1" goto PIN_CHECK_NGC
-if "%PIN_ACT%"=="2" goto PIN_CHECK_GPO
-if "%PIN_ACT%"=="0" goto RECOVERY_MENU
+if "!PIN_ACT!"=="1" goto PIN_CHECK_NGC
+if "!PIN_ACT!"=="2" goto PIN_CHECK_GPO
+if "!PIN_ACT!"=="0" goto RECOVERY_MENU
 goto PIN_RECOVERY
 
 :PIN_CHECK_NGC
 echo.
 echo   [*] Checking Windows Hello NGC Container directory...
 set "NGC_PATH=%SystemRoot%\ServiceProfiles\LocalService\AppData\Local\Microsoft\Ngc"
-if exist "%NGC_PATH%" (
+if exist "!NGC_PATH!" (
     echo   [+] NGC folder detected at: %NGC_PATH%
     echo   [*] Querying directory access permissions...
     icacls "%NGC_PATH%" 2>nul | findstr /i "SYSTEM Administrators LocalService"
@@ -432,9 +432,9 @@ echo.
 set "LOC_ACT="
 set /p "LOC_ACT=    >> Select action [0-2]: "
 
-if "%LOC_ACT%"=="1" goto LOC_LIST
-if "%LOC_ACT%"=="2" goto LOC_INSPECT
-if "%LOC_ACT%"=="0" goto RECOVERY_MENU
+if "!LOC_ACT!"=="1" goto LOC_LIST
+if "!LOC_ACT!"=="2" goto LOC_INSPECT
+if "!LOC_ACT!"=="0" goto RECOVERY_MENU
 goto LOCAL_RECOVERY
 
 :LOC_LIST
@@ -453,7 +453,7 @@ goto LOCAL_RECOVERY
 echo.
 set "TARGET_USER="
 set /p "TARGET_USER=    Enter exact username to inspect: "
-if "%TARGET_USER%"=="" goto LOCAL_RECOVERY
+if "!TARGET_USER!"=="" goto LOCAL_RECOVERY
 
 cls
 echo.
@@ -502,17 +502,17 @@ echo.
 set "LOCK_ACT="
 set /p "LOCK_ACT=    >> Select action [0-3]: "
 
-if "%LOCK_ACT%"=="1" goto LOCK_CHECK_ACC
-if "%LOCK_ACT%"=="2" goto LOCK_VIEW_EVENTS
-if "%LOCK_ACT%"=="3" goto LOCK_UNLOCK_ACC
-if "%LOCK_ACT%"=="0" goto RECOVERY_MENU
+if "!LOCK_ACT!"=="1" goto LOCK_CHECK_ACC
+if "!LOCK_ACT!"=="2" goto LOCK_VIEW_EVENTS
+if "!LOCK_ACT!"=="3" goto LOCK_UNLOCK_ACC
+if "!LOCK_ACT!"=="0" goto RECOVERY_MENU
 goto LOCKOUT_DIAG
 
 :LOCK_CHECK_ACC
 echo.
 set "CHK_USER="
 set /p "CHK_USER=    Enter username to check: "
-if "%CHK_USER%"=="" goto LOCKOUT_DIAG
+if "!CHK_USER!"=="" goto LOCKOUT_DIAG
 
 echo.
 echo   [*] Checking status for '%CHK_USER%'...
@@ -538,48 +538,11 @@ pause
 goto LOCKOUT_DIAG
 
 :LOCK_UNLOCK_ACC
-echo.
-net session >nul 2>&1
-if %errorlevel% NEQ 0 (
-    echo   [!] Error: Administrator privileges are required to unlock accounts.
-    echo.
-    pause
-    goto LOCKOUT_DIAG
-)
-
-set "UNL_USER="
-set /p "UNL_USER=    Enter username of the locked account to unlock: "
-if "%UNL_USER%"=="" goto LOCKOUT_DIAG
-
-echo.
-echo   [?] CONFIRMATION REQUIRED:
-echo       Are you authorized to unlock account '%UNL_USER%'?
-echo       (This operation only clears the lockout flag; it does NOT alter the user's password).
-echo.
-set "UNL_CONFIRM="
-set /p "UNL_CONFIRM=    Type 'YES' to proceed with unlock: "
-if /i not "%UNL_CONFIRM%"=="YES" (
-    echo   [*] Unlock cancelled by user.
-    pause
-    goto LOCKOUT_DIAG
-)
-
-echo.
-echo   [*] Unlocking account '%UNL_USER%'...
-net user "%UNL_USER%" /active:yes
-if %errorlevel% EQU 0 (
-    echo   [+] Account '%UNL_USER%' unlocked successfully. The user may now attempt sign-in.
-) else (
-    echo   [-] Failed to unlock account '%UNL_USER%'. Verify the username exists.
-)
-echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action AccountUnlock
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
 pause
-goto LOCKOUT_DIAG
+goto RECOVERY_MENU
 
-
-:: ============================================================
-::  [6] BITLOCKER RECOVERY ASSISTANT
-:: ============================================================
 :BITLOCKER_ASSIST
 cls
 echo.
@@ -622,9 +585,9 @@ echo.
 set "BIT_ACT="
 set /p "BIT_ACT=    >> Select action [0-2]: "
 
-if "%BIT_ACT%"=="1" goto BIT_STATUS
-if "%BIT_ACT%"=="2" goto BIT_HELP
-if "%BIT_ACT%"=="0" goto RECOVERY_MENU
+if "!BIT_ACT!"=="1" goto BIT_STATUS
+if "!BIT_ACT!"=="2" goto BIT_HELP
+if "!BIT_ACT!"=="0" goto RECOVERY_MENU
 goto BITLOCKER_ASSIST
 
 :BIT_STATUS
@@ -689,7 +652,7 @@ reg query "HKLM\SYSTEM\CurrentControlSet\Control\MiniNT" >nul 2>&1
 if %errorlevel% EQU 0 set "IS_WINPE=1"
 if /i "%SystemDrive%"=="X:" set "IS_WINPE=1"
 
-if "%IS_WINPE%"=="1" (
+if "!IS_WINPE!"=="1" (
     echo   [!] Environment: WINDOWS PREINSTALLATION ENVIRONMENT (WinPE / WinRE)
     echo       - Running from RAMDisk: %SystemDrive%
     echo       - Note: Local drive letters (C:, D:, etc.) are often shifted in WinPE.
@@ -717,7 +680,7 @@ for %%D in (C D E F G H I J K L M N O P Q R S T U V W Y Z) do (
     )
 )
 
-if "%FOUND_COUNT%"=="0" (
+if "!FOUND_COUNT!"=="0" (
     echo   [-] No offline Windows installations found on tested drives.
     echo       (Drives may be locked by BitLocker or unpartitioned).
 ) else (
@@ -734,8 +697,8 @@ echo.
 set "OFF_ACT="
 set /p "OFF_ACT=    >> Select action [0-1]: "
 
-if "%OFF_ACT%"=="1" goto OFF_VOLUMES
-if "%OFF_ACT%"=="0" goto RECOVERY_MENU
+if "!OFF_ACT!"=="1" goto OFF_VOLUMES
+if "!OFF_ACT!"=="0" goto RECOVERY_MENU
 goto OFFLINE_DETECT
 
 :OFF_VOLUMES
@@ -781,9 +744,9 @@ echo.
 set "BAK_ACT="
 set /p "BAK_ACT=    >> Select action [0-2]: "
 
-if "%BAK_ACT%"=="1" goto BAK_LIST_DRIVES
-if "%BAK_ACT%"=="2" goto BAK_WIZARD
-if "%BAK_ACT%"=="0" goto RECOVERY_MENU
+if "!BAK_ACT!"=="1" goto BAK_LIST_DRIVES
+if "!BAK_ACT!"=="2" goto BAK_WIZARD
+if "!BAK_ACT!"=="0" goto RECOVERY_MENU
 goto DATA_BACKUP
 
 :BAK_LIST_DRIVES
@@ -798,86 +761,11 @@ pause
 goto DATA_BACKUP
 
 :BAK_WIZARD
-echo.
-echo   === STEP 1: Select Source User Directory ===
-echo   Common locations:
-if exist "C:\Users" (
-    echo   Found user profiles on C:\Users:
-    dir /b /ad "C:\Users" 2>nul | findstr /v /i "All.Users Default Default.User Public"
-)
-echo.
-set "SRC_DIR="
-set /p "SRC_DIR=    Enter full Source Directory path (e.g. C:\Users\Username): "
-if "%SRC_DIR%"=="" goto DATA_BACKUP
-
-if not exist "%SRC_DIR%" (
-    echo.
-    echo   [-] Error: Source directory does not exist: "%SRC_DIR%"
-    pause
-    goto DATA_BACKUP
-)
-
-echo.
-echo   === STEP 2: Select Destination Backup Directory ===
-echo   (Ensure target drive has adequate free storage space)
-echo.
-set "DST_DIR="
-set /p "DST_DIR=    Enter full Destination path (e.g. E:\Backup_OnyxTools): "
-if "%DST_DIR%"=="" goto DATA_BACKUP
-
-echo.
-echo   === STEP 3: Select Backup Scope ===
-echo   [1] User Libraries Only (Desktop, Documents, Downloads, Pictures, Music, Videos)
-echo   [2] Entire Profile Directory (Excludes transient AppData caches)
-echo.
-set "SCOPE_CHOICE="
-set /p "SCOPE_CHOICE=    Select scope [1-2]: "
-
-echo.
-echo   ==================================================================================================
-echo   BACKUP SUMMARY & CONFIRMATION:
-echo     Source     : "%SRC_DIR%"
-echo     Destination: "%DST_DIR%"
-echo     Mode       : Non-destructive Robocopy (Copy only, no source deletion)
-echo   ==================================================================================================
-echo.
-set "BAK_CONFIRM="
-set /p "BAK_CONFIRM=    Are you ready to proceed with backup? (Type 'YES' to start): "
-if /i not "%BAK_CONFIRM%"=="YES" (
-    echo   [*] Backup cancelled by user.
-    pause
-    goto DATA_BACKUP
-)
-
-echo.
-echo   [*] Creating destination folder if needed...
-if not exist "%DST_DIR%" mkdir "%DST_DIR%" >nul 2>&1
-
-echo   [*] Starting safe copy process... Please wait.
-echo.
-
-if "%SCOPE_CHOICE%"=="1" (
-    for %%F in (Desktop Documents Downloads Pictures Music Videos) do (
-        if exist "%SRC_DIR%\%%F" (
-            echo   [*] Copying %%F...
-            robocopy "%SRC_DIR%\%%F" "%DST_DIR%\%%F" /E /R:1 /W:1 /COPY:DAT /XJ /NFL /NDL /NP
-        )
-    )
-) else (
-    echo   [*] Copying full profile data...
-    robocopy "%SRC_DIR%" "%DST_DIR%" /E /R:1 /W:1 /COPY:DAT /XJ /XD "AppData\Local\Temp" "AppData\Local\Microsoft\Windows\INetCache" /NFL /NDL /NP
-)
-
-echo.
-echo   [+] Backup operation completed! Check destination: "%DST_DIR%"
-echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action DataBackup
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
 pause
-goto DATA_BACKUP
+goto RECOVERY_MENU
 
-
-:: ============================================================
-::  [9] WINDOWS RECOVERY ENVIRONMENT GUIDE
-:: ============================================================
 :WINRE_GUIDE
 cls
 echo.
@@ -921,8 +809,8 @@ echo.
 set "RE_ACT="
 set /p "RE_ACT=    >> Select action [0-1]: "
 
-if "%RE_ACT%"=="1" goto WINRE_REBOOT
-if "%RE_ACT%"=="0" goto RECOVERY_MENU
+if "!RE_ACT!"=="1" goto WINRE_REBOOT
+if "!RE_ACT!"=="0" goto RECOVERY_MENU
 goto WINRE_GUIDE
 
 :WINRE_REBOOT
@@ -932,7 +820,7 @@ echo       Please ensure all open work is saved!
 echo.
 set "RE_CONFIRM="
 set /p "RE_CONFIRM=    Type 'YES' to reboot now: "
-if /i not "%RE_CONFIRM%"=="YES" (
+if /i not "!RE_CONFIRM!"=="YES" (
     echo   [*] Reboot cancelled.
     pause
     goto WINRE_GUIDE

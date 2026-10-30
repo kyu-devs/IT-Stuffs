@@ -35,35 +35,12 @@ echo.
 set "AIO_CHOICE="
 set /p "AIO_CHOICE=    >> Select option: "
 
-if "%AIO_CHOICE%"=="1" goto LAUNCH_WINUTIL
-if "%AIO_CHOICE%"=="0" goto :EOF
+if "!AIO_CHOICE!"=="1" goto LAUNCH_WINUTIL
+if "!AIO_CHOICE!"=="0" goto :EOF
 goto ALLINONE_MENU
 
 :LAUNCH_WINUTIL
-cls
-echo.
-echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Chris Titus Tech Windows Utility (WinUtil)                                                   ^|
-echo   +------------------------------------------------------------------------------------------------+
-echo.
-echo   This launches Chris Titus Tech's Windows Utility (CTT WinUtil) for tweaks,
-echo   essential software installs, system configurations, and Windows update management.
-echo.
-echo   Command:
-echo     irm https://christitus.com/win ^| iex
-echo.
-echo   [!] Requires an active Internet Connection and Administrator Rights.
-echo.
-set "CONFIRM="
-set /p "CONFIRM=   >> Launch Windows All in One Utilities? (Y/N): "
-if /i not "%CONFIRM%"=="Y" goto ALLINONE_MENU
-
-echo.
-echo   [*] Launching Windows All in One Utilities via PowerShell...
-echo.
-powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://christitus.com/win | iex"
-echo.
-echo   [+] Finished or closed Windows All in One Utilities.
-echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action WinUtil
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
 pause
 goto ALLINONE_MENU

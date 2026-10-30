@@ -29,14 +29,14 @@ echo.
 set "SEC_CHOICE="
 set /p "SEC_CHOICE=    >> Select option: "
 
-if "%SEC_CHOICE%"=="1" goto S_1
-if "%SEC_CHOICE%"=="2" goto S_2
-if "%SEC_CHOICE%"=="3" goto S_3
-if "%SEC_CHOICE%"=="4" goto S_4
-if "%SEC_CHOICE%"=="5" goto S_5
-if "%SEC_CHOICE%"=="6" goto S_6
-if "%SEC_CHOICE%"=="7" goto S_7
-if "%SEC_CHOICE%"=="0" goto :EOF
+if "!SEC_CHOICE!"=="1" goto S_1
+if "!SEC_CHOICE!"=="2" goto S_2
+if "!SEC_CHOICE!"=="3" goto S_3
+if "!SEC_CHOICE!"=="4" goto S_4
+if "!SEC_CHOICE!"=="5" goto S_5
+if "!SEC_CHOICE!"=="6" goto S_6
+if "!SEC_CHOICE!"=="7" goto S_7
+if "!SEC_CHOICE!"=="0" goto :EOF
 goto SEC_MENU
 
 :S_1
@@ -99,15 +99,8 @@ pause
 goto SEC_MENU
 
 :S_6
-cls
-echo.
-echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Remote Desktop Logon History                                                                ^|
-echo   +------------------------------------------------------------------------------------------------+
-echo.
-echo   [*] Querying TerminalServices-LocalSessionManager Log...
-powershell -NoProfile -Command "Get-WinEvent -LogName 'Microsoft-Windows-TerminalServices-LocalSessionManager/Operational' -MaxEvents 10 -ErrorAction SilentlyContinue | Where-Object { $_.Id -eq 1149 } | Format-List TimeCreated, Message"
-echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action RdpHistory
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
 pause
 goto SEC_MENU
 

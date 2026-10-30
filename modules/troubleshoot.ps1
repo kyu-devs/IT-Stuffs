@@ -1,9 +1,12 @@
-# ============================================================
+﻿# ============================================================
 # ONYX IT DEPARTMENT TECH TOOLS - Custom Problem Solver (Module 14)
 # Describe your problem, get step-by-step fix suggestions.
 # Hardware diagnostics activate when software fixes fail.
 # ============================================================
 
+. (Join-Path $PSScriptRoot 'common.ps1')
+. (Join-Path $PSScriptRoot 'printer_core.ps1')
+. (Join-Path $PSScriptRoot 'system_tools.ps1')
 $host.UI.RawUI.WindowTitle = "ONYX IT DEPARTMENT TECH TOOLS - Custom Problem Solver"
 
 # == Helpers ===================================================================
@@ -62,13 +65,18 @@ function Run-Step {
     }
     if (Ask-Confirm "Apply this fix?") {
         try {
-            & $Action
-            Write-Done "Done."
+            $ErrorActionPreference = 'Stop'
+            & $Action | Out-Host
+            Write-Done "Step returned. Verify its findings; this does not confirm the problem is fixed."
+            return [pscustomobject]@{Status='Completed';Description=$Desc}
         } catch {
             Write-Fail ("Error: " + $_.Exception.Message)
+            Write-KyuLog "Problem-solver step failed: $Desc" 'ERROR'
+            return [pscustomobject]@{Status='Failed';Description=$Desc}
         }
     } else {
         Write-Skip "Skipped."
+        return [pscustomobject]@{Status='Skipped';Description=$Desc}
     }
 }
 
@@ -85,8 +93,8 @@ function Show-HardwareChecks {
     Write-Host "   |                     [!] HARDWARE DIAGNOSTICS & PHYSICAL ISOLATION CHECKS                    |" -ForegroundColor Yellow
     Write-Host "   +=============================================================================================+" -ForegroundColor Yellow
     Write-Host ""
-    Write-Host "   Notice: Software diagnostics and adjustments did not resolve this problem." -ForegroundColor White
-    Write-Host "   When Windows configuration and drivers are healthy, the root cause is almost always PHYSICAL." -ForegroundColor White
+    Write-Host "   Physical checks can help isolate the problem; unresolved software, drivers, or policy may still be involved." -ForegroundColor White
+    Write-Host "   Save evidence before replacing parts. These checklists do not diagnose component failure." -ForegroundColor White
     Write-Host ("   Category: " + $Category) -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "   Let us walk through the physical hardware troubleshooting checklist step by step:" -ForegroundColor Cyan
@@ -121,9 +129,9 @@ function Show-HardwareChecks {
         Write-Host "   |                                   FINAL HARDWARE VERDICT                                    |" -ForegroundColor Red
         Write-Host "   +---------------------------------------------------------------------------------------------+" -ForegroundColor Red
         Write-Host "   [!] Both software repairs and physical isolation checks have been exhausted." -ForegroundColor Red
-        Write-Host "   [>] Primary Conclusion: Component hardware failure detected." -ForegroundColor Yellow
-        Write-Host "       The related hardware component (e.g. monitor panel, GPU, RAM, drive, or motherboard)" -ForegroundColor White
-        Write-Host "       likely has internal electrical or physical damage and requires repair or replacement." -ForegroundColor White
+        Write-Host "   [>] The problem remains unresolved; hardware failure has not been confirmed." -ForegroundColor Yellow
+        Write-Host "       Collect event logs and reproduce with known-good parts or vendor diagnostics." -ForegroundColor White
+        Write-Host "       Escalate with the evidence before deciding whether a component needs replacement." -ForegroundColor White
         Write-Host ""
         Pause-Return
     }
@@ -433,7 +441,7 @@ $Problems = @(
                 RequiresReboot = $true
                 Action       = {
                     $path = "HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers"
-                    $cur  = (Get-ItemProperty -Path $path -Name "HwSchMode" -ErrorAction SilentlyContinue).HwSchMode
+                    $cur  = (Get-ItemProperty -Path $path -Name "HwSchMode" -ErrorAction Stop).HwSchMode
                     Write-Info "Current HAGS registry value: $cur  (2 = Enabled, 1 = Disabled)"
                     if ($cur -eq 2) {
                         Set-ItemProperty -Path $path -Name "HwSchMode" -Value 1 -Type DWord -Force
@@ -462,8 +470,8 @@ $Problems = @(
                 Reason = "Aggressive power saving can cause the display link to drop momentarily, causing flicker."
                 Action = {
                     Write-Info "Setting power plan to Balanced and disabling display sleep..."
-                    powercfg -change -monitor-timeout-ac 0
-                    powercfg -change -monitor-timeout-dc 0
+                    [void](Invoke-KyuNative powercfg.exe @('/change','monitor-timeout-ac','0'))
+                    [void](Invoke-KyuNative powercfg.exe @('/change','monitor-timeout-dc','0'))
                     Write-Done "Monitor timeout set to Never (AC and DC)."
                 }
             }
@@ -471,12 +479,12 @@ $Problems = @(
                 Desc   = "Check for Windows Shell Experience Host issues"
                 Reason = "ShellExperienceHost.exe is a known cause of flicker when it crashes or uses excessive resources."
                 Action = {
-                    $proc = Get-Process -Name "ShellExperienceHost" -ErrorAction SilentlyContinue
+                    $proc = Get-Process -Name "ShellExperienceHost" -ErrorAction Stop
                     if ($proc) {
                         Write-Info "ShellExperienceHost is running. CPU: $($proc.CPU) | Memory: $([Math]::Round($proc.WorkingSet64/1MB, 1)) MB"
                         if ($proc.CPU -gt 10) {
                             Write-Warn "High CPU usage detected on ShellExperienceHost. Restarting it..."
-                            Stop-Process -Name "ShellExperienceHost" -Force -ErrorAction SilentlyContinue
+                            Stop-Process -Name "ShellExperienceHost" -Force -ErrorAction Stop
                             Start-Sleep -Seconds 2
                             Write-Done "Process restarted by Windows automatically."
                         } else {
@@ -491,11 +499,7 @@ $Problems = @(
                 Desc         = "Run System File Checker (sfc /scannow)"
                 Reason       = "Corrupted Windows system files can cause display rendering issues and flickering."
                 RequiresReboot = $false
-                Action       = {
-                    Write-Warn "This may take several minutes..."
-                    Start-Process -FilePath "sfc.exe" -ArgumentList "/scannow" -Verb RunAs -Wait
-                    Write-Done "SFC scan complete. Check output for any errors."
-                }
+                Action       = { Invoke-KyuSystemAction 'RepairSFC' }
             }
             @{
                 Desc   = "Suggest physical checks"
@@ -551,7 +555,7 @@ $Problems = @(
                     Write-Host "   Enter a Process ID to kill it, or press ENTER to skip: " -ForegroundColor Yellow -NoNewline
                     $pid2kill = (Read-Host).Trim()
                     if ($pid2kill -match "^\d+$") {
-                        Stop-Process -Id ([int]$pid2kill) -Force -ErrorAction SilentlyContinue
+                        Stop-Process -Id ([int]$pid2kill) -Force -ErrorAction Stop
                         Write-Done "Process $pid2kill terminated."
                     } else {
                         Write-Skip "No process killed."
@@ -561,12 +565,7 @@ $Problems = @(
             @{
                 Desc   = "Clear temporary files and system cache"
                 Reason = "Accumulated junk files fill up the disk and slow down read/write operations."
-                Action = {
-                    Write-Info "Cleaning temp folders..."
-                    Remove-Item "$env:TEMP\*" -Recurse -Force -ErrorAction SilentlyContinue
-                    Remove-Item "C:\Windows\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue
-                    Write-Done "Temp files cleared."
-                }
+                Action = { Invoke-KyuSystemAction 'TempClean' }
             }
             @{
                 Desc         = "Disable non-essential startup programs"
@@ -588,33 +587,20 @@ $Problems = @(
                 }
             }
             @{
-                Desc   = "Flush standby memory (RAM cleanup)"
-                Reason = "Windows sometimes holds RAM in standby longer than needed. Flushing frees it immediately."
-                Action = {
-                    Write-Info "Triggering .NET garbage collection to free standby RAM..."
-                    [System.GC]::Collect()
-                    [System.GC]::WaitForPendingFinalizers()
-                    [System.GC]::Collect()
-                    Write-Done "Memory flush complete."
-                }
+                Desc   = "Inspect memory pressure and large processes"
+                Reason = "Review available memory and large applications before closing apps or adding RAM."
+                Action = { Invoke-KyuSystemAction 'Memory' }
             }
             @{
                 Desc         = "Enable High Performance power plan"
                 Reason       = "Balanced or Power Saver plans throttle the CPU. High Performance ensures max clock speeds."
                 RequiresReboot = $false
-                Action       = {
-                    powercfg -setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
-                    Write-Done "High Performance power plan activated."
-                }
+                Action       = { Invoke-KyuSystemAction 'PowerHigh' }
             }
             @{
                 Desc   = "Run SFC system file check"
                 Reason = "Corrupted Windows system files can cause mysterious slowness and instability."
-                Action = {
-                    Write-Warn "Running SFC... This may take several minutes."
-                    Start-Process -FilePath "sfc.exe" -ArgumentList "/scannow" -Verb RunAs -Wait
-                    Write-Done "SFC scan complete."
-                }
+                Action = { Invoke-KyuSystemAction 'RepairSFC' }
             }
         )
     }
@@ -631,7 +617,7 @@ $Problems = @(
                 Action = {
                     $targets = @(@{Name="Local Gateway";Addr="192.168.1.1"},@{Name="Google DNS";Addr="8.8.8.8"},@{Name="Cloudflare DNS";Addr="1.1.1.1"},@{Name="Google.com";Addr="google.com"})
                     foreach ($t in $targets) {
-                        $r = Test-Connection -ComputerName $t.Addr -Count 2 -Quiet -ErrorAction SilentlyContinue
+                        $r = Test-Connection -ComputerName $t.Addr -Count 2 -Quiet -ErrorAction Stop
                         $status = if ($r) { "REACHABLE" } else { "UNREACHABLE" }
                         $color  = if ($r) { "Green" } else { "Red" }
                         Write-Host "   $($t.Name.PadRight(20)) ($($t.Addr.PadRight(15))) : $status" -ForegroundColor $color
@@ -644,23 +630,17 @@ $Problems = @(
                 Action = { ipconfig /flushdns | Out-Null; Write-Done "DNS cache flushed." }
             }
             @{
-                Desc   = "Release and renew IP address"
+                Desc   = "Renew the DHCP lease"
                 Reason = "An expired or conflicted DHCP lease can block internet access."
-                Action = {
-                    ipconfig /release | Out-Null
-                    Start-Sleep -Seconds 2
-                    ipconfig /renew  | Out-Null
-                    Write-Done "IP address released and renewed."
-                    ipconfig | Select-String "IPv4|Default Gateway|Subnet" | ForEach-Object { Write-Host "   $_" -ForegroundColor Green }
-                }
+                Action = { Invoke-KyuSystemAction 'NetworkRenew' }
             }
             @{
                 Desc         = "Reset Winsock catalog and TCP/IP stack"
                 Reason       = "A corrupted Winsock or TCP/IP stack is a common cause of 'limited connectivity' or no access."
                 RequiresReboot = $true
                 Action       = {
-                    netsh winsock reset | Out-Null
-                    netsh int ip reset   | Out-Null
+                    [void](Invoke-KyuNative netsh.exe @('winsock','reset'))
+                    [void](Invoke-KyuNative netsh.exe @('int','ip','reset'))
                     Write-Done "Winsock and TCP/IP stack reset. A restart is required."
                 }
             }
@@ -670,7 +650,7 @@ $Problems = @(
                 Action = {
                     $adapter = Get-NetAdapter | Where-Object { $_.Status -eq "Up" -and $_.InterfaceDescription -notlike "*Loopback*" } | Select-Object -First 1
                     if ($adapter) {
-                        Set-DnsClientServerAddress -InterfaceIndex $adapter.InterfaceIndex -ServerAddresses ("1.1.1.1", "1.0.0.1") -ErrorAction SilentlyContinue
+                        Set-DnsClientServerAddress -InterfaceIndex $adapter.InterfaceIndex -ServerAddresses ("1.1.1.1", "1.0.0.1") -ErrorAction Stop
                         Write-Done "DNS set to Cloudflare (1.1.1.1 / 1.0.0.1) on $($adapter.Name)."
                     } else {
                         Write-Fail "No active network adapter found."
@@ -678,13 +658,10 @@ $Problems = @(
                 }
             }
             @{
-                Desc         = "Reset Windows Firewall to default"
-                Reason       = "A misconfigured firewall can silently block all outgoing traffic."
+                Desc         = "Inspect Windows Firewall rules"
+                Reason       = "Check rules without removing custom firewall or organization policy."
                 RequiresReboot = $false
-                Action       = {
-                    netsh advfirewall reset | Out-Null
-                    Write-Done "Windows Firewall reset to defaults."
-                }
+                Action       = { Write-Info 'Review Windows Firewall rules and organization policy. Existing rules were retained.'; Start-Process 'wf.msc' }
             }
             @{
                 Desc   = "Disable and re-enable the network adapter"
@@ -692,9 +669,9 @@ $Problems = @(
                 Action = {
                     $adapter = Get-NetAdapter | Where-Object { $_.Status -eq "Up" -and $_.InterfaceDescription -notlike "*Loopback*" } | Select-Object -First 1
                     if ($adapter) {
-                        Disable-NetAdapter -Name $adapter.Name -Confirm:$false -ErrorAction SilentlyContinue
+                        Disable-NetAdapter -Name $adapter.Name -Confirm:$false -ErrorAction Stop
                         Start-Sleep -Seconds 3
-                        Enable-NetAdapter  -Name $adapter.Name -Confirm:$false -ErrorAction SilentlyContinue
+                        Enable-NetAdapter  -Name $adapter.Name -Confirm:$false -ErrorAction Stop
                         Write-Done "Adapter '$($adapter.Name)' toggled."
                     } else {
                         Write-Fail "No active adapter found."
@@ -715,7 +692,7 @@ $Problems = @(
                 Reason = "The stop code tells you exactly which component caused the crash."
                 Action = {
                     Write-Info "Scanning System event log for BSOD events (Event ID 1001)..."
-                    $evts = Get-WinEvent -FilterHashtable @{LogName='System'; Id=1001} -MaxEvents 5 -ErrorAction SilentlyContinue
+                    $evts = Get-WinEvent -FilterHashtable @{LogName='System'; Id=1001} -MaxEvents 5 -ErrorAction Stop
                     if ($evts) {
                         $evts | ForEach-Object {
                             Write-Host "   [$($_.TimeCreated)] $($_.Message.Substring(0,[Math]::Min(300,$_.Message.Length)))" -ForegroundColor Green
@@ -748,12 +725,7 @@ $Problems = @(
             @{
                 Desc   = "Run System File Checker + DISM repair"
                 Reason = "Corrupted Windows system files can cause BSOD crashes."
-                Action = {
-                    Write-Warn "This will take several minutes..."
-                    DISM /Online /Cleanup-Image /RestoreHealth
-                    sfc /scannow
-                    Write-Done "SFC and DISM completed."
-                }
+                Action = { Invoke-KyuSystemAction 'RepairCombined' }
             }
             @{
                 Desc         = "Update all drivers (Device Manager)"
@@ -779,7 +751,7 @@ $Problems = @(
                 Reason = "Bad sectors on the boot drive can trigger kernel-level crashes."
                 Action = {
                     Write-Info "Running read-only CHKDSK on C:..."
-                    chkdsk C: /scan
+                    [void](Invoke-KyuNative chkdsk.exe @($env:SystemDrive,'/scan'))
                 }
             }
         )
@@ -793,14 +765,8 @@ $Problems = @(
         Steps    = @(
             @{
                 Desc   = "Restart the Print Spooler service"
-                Reason = "The Spooler manages all print jobs. Restarting it clears stuck queues and resets the service."
-                Action = {
-                    Stop-Service -Name spooler -Force -ErrorAction SilentlyContinue
-                    Start-Sleep -Seconds 2
-                    Remove-Item "C:\Windows\System32\spool\PRINTERS\*" -Recurse -Force -ErrorAction SilentlyContinue
-                    Start-Service -Name spooler -ErrorAction SilentlyContinue
-                    Write-Done "Print Spooler restarted and print queue cleared."
-                }
+                Reason = "The Spooler manages all print jobs. Restarting can recover the service without deleting pending jobs."
+                Action = { Restart-KyuSpooler; Write-Info 'Spooler running; pending jobs retained. Use the printer menu for confirmed queue clearing.' }
             }
             @{
                 Desc   = "List all installed printers and their status"
@@ -812,20 +778,7 @@ $Problems = @(
             @{
                 Desc   = "Set a printer as default"
                 Reason = "Apps may try printing to the wrong printer if the default is not set."
-                Action = {
-                    $printers = Get-Printer | Select-Object -ExpandProperty Name
-                    if ($printers.Count -eq 0) { Write-Fail "No printers installed."; return }
-                    for ($i=0;$i -lt $printers.Count;$i++) { Write-Host "   [$($i+1)] $($printers[$i])" -ForegroundColor Cyan }
-                    Write-Host ""
-                    Write-Host "   Enter number to set as default (or ENTER to skip): " -ForegroundColor Yellow -NoNewline
-                    $sel = (Read-Host).Trim()
-                    if ($sel -match "^\d+$" -and [int]$sel -ge 1 -and [int]$sel -le $printers.Count) {
-                        Set-Printer -Name $printers[[int]$sel - 1] -Default -ErrorAction SilentlyContinue
-                        Write-Done "$($printers[[int]$sel - 1]) set as default."
-                    } else {
-                        Write-Skip "No change made."
-                    }
-                }
+                Action = { [void](Invoke-KyuNative powershell.exe @('-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $PSScriptRoot 'printer_tools.ps1'),'-Action','Default') -Interactive) }
             }
             @{
                 Desc         = "Reinstall printer driver"
@@ -840,10 +793,7 @@ $Problems = @(
             @{
                 Desc   = "Enable File and Printer Sharing firewall rules"
                 Reason = "If sharing a printer on a network, firewall rules must allow printer traffic."
-                Action = {
-                    netsh advfirewall firewall set rule group="File and Printer Sharing" new enable=Yes
-                    Write-Done "File and Printer Sharing firewall rules enabled."
-                }
+                Action = { [void](Invoke-KyuNative powershell.exe @('-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $PSScriptRoot 'printer_tools.ps1'),'-Action','EnableSharing') -Interactive) }
             }
         )
     }
@@ -867,9 +817,7 @@ $Problems = @(
                 Desc   = "Restart Windows Audio service"
                 Reason = "The audio service sometimes crashes silently, killing all sound."
                 Action = {
-                    Restart-Service -Name "AudioSrv" -Force -ErrorAction SilentlyContinue
-                    Restart-Service -Name "AudioEndpointBuilder" -Force -ErrorAction SilentlyContinue
-                    Write-Done "Audio services restarted."
+                    Restart-KyuAudioServices
                 }
             }
             @{
@@ -885,11 +833,7 @@ $Problems = @(
             @{
                 Desc   = "Run the Windows Audio troubleshooter"
                 Reason = "Windows has a built-in audio fixer that can automatically resolve common problems."
-                Action = {
-                    Start-Process msdt.exe -ArgumentList "/id AudioPlaybackDiagnostic"
-                    Write-Info "Audio troubleshooter launched. Follow the on-screen steps."
-                    Pause-Return
-                }
+                Action = { Start-Process 'ms-settings:troubleshoot' }
             }
         )
     }
@@ -908,31 +852,19 @@ $Problems = @(
                 }
             }
             @{
-                Desc   = "Disable SysMain (Superfetch)"
+                Desc   = "Temporarily stop SysMain (Superfetch)"
                 Reason = "Superfetch can spike disk usage on slower HDDs by constantly pre-loading apps."
-                Action = {
-                    Stop-Service -Name SysMain -Force -ErrorAction SilentlyContinue
-                    Set-Service  -Name SysMain -StartupType Disabled
-                    Write-Done "SysMain (Superfetch) stopped and disabled."
-                }
+                Action = { Invoke-KyuSystemAction 'PerformanceSysMain' }
             }
             @{
-                Desc   = "Disable Windows Search indexing"
+                Desc   = "Temporarily stop Windows Search indexing"
                 Reason = "The search indexer causes heavy disk I/O, especially on spinning HDDs."
-                Action = {
-                    Stop-Service -Name WSearch -Force -ErrorAction SilentlyContinue
-                    Set-Service  -Name WSearch -StartupType Disabled
-                    Write-Done "Windows Search indexer stopped and disabled."
-                }
+                Action = { Invoke-KyuSystemAction 'PerformanceSearch' }
             }
             @{
                 Desc   = "Clear temp files and Windows cache"
                 Reason = "Frees hidden disk space from temp directories and Windows Update cache leftovers."
-                Action = {
-                    Remove-Item "$env:TEMP\*" -Recurse -Force -ErrorAction SilentlyContinue
-                    Remove-Item "C:\Windows\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue
-                    Write-Done "Temp files cleared."
-                }
+                Action = { Invoke-KyuSystemAction 'TempClean' }
             }
             @{
                 Desc   = "Run Disk Cleanup (GUI)"
@@ -948,7 +880,7 @@ $Problems = @(
                 Reason = "Large files (old backups, ISO images) are often the real culprits for low space."
                 Action = {
                     Write-Warn "Scanning C: drive... This may take a minute."
-                    Get-ChildItem -Path "C:\" -Recurse -File -ErrorAction SilentlyContinue |
+                    Get-ChildItem -Path "C:\" -Recurse -File -ErrorAction Stop |
                         Sort-Object Length -Descending | Select-Object -First 20 |
                         Select-Object FullName, @{N="Size(MB)";E={[Math]::Round($_.Length/1MB,1)}} |
                         Format-Table -AutoSize | Out-String | ForEach-Object { Write-Host "   $_" -ForegroundColor Green }
@@ -968,7 +900,7 @@ $Problems = @(
                 Reason = "The Application log records exact error codes and faulting module names for crashes."
                 Action = {
                     Write-Info "Scanning last 10 Application errors..."
-                    Get-WinEvent -FilterHashtable @{LogName='Application'; Level=2} -MaxEvents 10 -ErrorAction SilentlyContinue |
+                    Get-WinEvent -FilterHashtable @{LogName='Application'; Level=2} -MaxEvents 10 -ErrorAction Stop |
                         Select-Object TimeCreated, ProviderName, Message |
                         ForEach-Object { Write-Host "   [$($_.TimeCreated)] $($_.ProviderName) - $($_.Message.Substring(0,[Math]::Min(200,$_.Message.Length)))" -ForegroundColor Green }
                 }
@@ -986,10 +918,7 @@ $Problems = @(
             @{
                 Desc   = "Run Windows App Troubleshooter"
                 Reason = "Built-in troubleshooter can detect and repair common Windows Store app problems."
-                Action = {
-                    Start-Process msdt.exe -ArgumentList "/id WindowsUpdateDiagnostic"
-                    Pause-Return
-                }
+                Action = { Start-Process 'ms-settings:troubleshoot' }
             }
             @{
                 Desc   = "Re-register all Windows Store apps"
@@ -997,7 +926,7 @@ $Problems = @(
                 Action = {
                     Write-Warn "Re-registering all AppX packages..."
                     Get-AppXPackage -AllUsers | ForEach-Object {
-                        Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" -ErrorAction SilentlyContinue
+                        Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml" -ErrorAction Stop
                     }
                     Write-Done "AppX packages re-registered."
                 }
@@ -1005,11 +934,7 @@ $Problems = @(
             @{
                 Desc   = "Run SFC scan to fix corrupted system files"
                 Reason = "Corrupted system DLLs shared across apps can cause random crash patterns."
-                Action = {
-                    Write-Warn "Running SFC... May take several minutes."
-                    Start-Process -FilePath "sfc.exe" -ArgumentList "/scannow" -Verb RunAs -Wait
-                    Write-Done "SFC scan complete."
-                }
+                Action = { Invoke-KyuSystemAction 'RepairSFC' }
             }
         )
     }
@@ -1018,23 +943,20 @@ $Problems = @(
     @{
         Keywords = @("high cpu","cpu 100","100 cpu","cpu usage","cpu high","processor","overheating","cpu hot","hot cpu","cpu maxed")
         Title    = "High CPU Usage"
-        Intro    = "100% CPU is caused by a runaway process, antivirus scans, Windows Update, or malware."
+        Intro    = "High CPU can be caused by a runaway process, antivirus scans, Windows Update, or malware."
         Steps    = @(
             @{
                 Desc   = "Show top CPU-consuming processes"
-                Reason = "Identifies the exact process causing the CPU spike."
+                Reason = "Shows cumulative CPU time since each process started; this is not a current CPU percentage sample."
                 Action = {
-                    Write-Info "Top 10 CPU processes:"
+                    Write-Info "Processes with the most cumulative CPU seconds:"
                     Get-Process | Sort-Object CPU -Descending | Select-Object -First 10 Name, Id, CPU, @{N="RAM(MB)";E={[Math]::Round($_.WorkingSet64/1MB,1)}} | Format-Table -AutoSize | Out-String | ForEach-Object { Write-Host "   $_" -ForegroundColor Green }
                 }
             }
             @{
-                Desc   = "Disable SysMain (Superfetch) and Windows Search"
+                Desc   = "Temporarily stop SysMain (Superfetch) and Windows Search"
                 Reason = "These services can spike CPU, especially during indexing or pre-loading."
-                Action = {
-                    Stop-Service SysMain,WSearch -Force -ErrorAction SilentlyContinue
-                    Write-Done "SysMain and WSearch stopped."
-                }
+                Action = { Invoke-KyuSystemAction 'PerformanceSysMain'; Invoke-KyuSystemAction 'PerformanceSearch' }
             }
             @{
                 Desc         = "Configure Windows Update to run at low priority"
@@ -1049,20 +971,13 @@ $Problems = @(
             @{
                 Desc   = "Scan for malware (Windows Defender quick scan)"
                 Reason = "Malware and cryptominers are designed to steal CPU cycles silently."
-                Action = {
-                    Write-Info "Starting Windows Defender quick scan..."
-                    Start-Process "C:\Program Files\Windows Defender\MpCmdRun.exe" -ArgumentList "-Scan -ScanType 1" -Wait -ErrorAction SilentlyContinue
-                    Write-Done "Scan complete. Check Windows Security for results."
-                }
+                Action = { Start-MpScan -ScanType QuickScan -ErrorAction Stop; Write-Info 'Scan requested. Review Windows Security for completion and findings.' }
             }
             @{
                 Desc         = "Set power plan to Balanced (prevents thermal throttling loops)"
                 Reason       = "High Performance mode on a throttled/overheating CPU causes oscillating CPU spikes."
                 RequiresReboot = $false
-                Action       = {
-                    powercfg -setactive 381b4222-f694-41f0-9685-ff5bb260df2e
-                    Write-Done "Power plan set to Balanced."
-                }
+                Action       = { Set-KyuPowerPlan 'Balanced' }
             }
         )
     }
@@ -1077,7 +992,7 @@ $Problems = @(
                 Desc   = "Restart HID service (Human Interface Device)"
                 Reason = "The HID service manages all keyboard and mouse communication. Restarting it refreshes input."
                 Action = {
-                    Restart-Service HidServ -Force -ErrorAction SilentlyContinue
+                    Restart-Service HidServ -ErrorAction Stop
                     Write-Done "HID service restarted."
                 }
             }
@@ -1121,12 +1036,12 @@ $FallbackSteps = @(
     @{
         Desc   = "Run System File Checker"
         Reason = "A general repair to fix corrupted system files that may be causing your problem."
-        Action = { Start-Process -FilePath "sfc.exe" -ArgumentList "/scannow" -Verb RunAs -Wait; Write-Done "SFC complete." }
+        Action = { Invoke-KyuSystemAction 'RepairSFC' }
     }
     @{
         Desc   = "Run DISM online repair"
         Reason = "DISM repairs the Windows component store, which underlies most system functions."
-        Action = { DISM /Online /Cleanup-Image /RestoreHealth; Write-Done "DISM complete." }
+        Action = { Invoke-KyuSystemAction 'RepairDISM' }
     }
     @{
         Desc   = "Open Event Viewer for clues"
@@ -1187,16 +1102,20 @@ function Show-HardwareMenu {
 # == Main Loop =================================================================
 
 function Find-Problem {
-    param([string]$Input)
-    $lower = $Input.ToLower()
+    param([Alias('Input')][string]$ProblemText)
+    if ([string]::IsNullOrWhiteSpace($ProblemText)) { return $null }
+    $best = $null
+    $score = 0
     foreach ($p in $Problems) {
         foreach ($kw in $p.Keywords) {
-            if ($lower -contains $kw -or $lower -like ("*" + $kw + "*")) {
-                return $p
+            $pattern = '(?i)(?<!\w)' + [regex]::Escape($kw) + '(?!\w)'
+            if ($ProblemText -match $pattern -and $kw.Length -gt $score) {
+                $best = $p
+                $score = $kw.Length
             }
         }
     }
-    return $null
+    return $best
 }
 
 while ($true) {
@@ -1225,7 +1144,7 @@ while ($true) {
         continue
     }
 
-    $matched = Find-Problem -Input $userInput
+    $matched = Find-Problem -ProblemText $userInput
 
     Clear-Host
 
@@ -1237,15 +1156,16 @@ while ($true) {
         Write-Host "   I will walk you through each one and ask before applying it." -ForegroundColor Green
 
         $steps = $matched.Steps
+        $outcomes = @()
         for ($i = 0; $i -lt $steps.Count; $i++) {
             $s = $steps[$i]
             $reboot = if ($s.RequiresReboot) { $true } else { $false }
-            Run-Step -Num ($i+1) -Desc $s.Desc -Reason $s.Reason -Action $s.Action -RequiresReboot:$reboot
+            $outcomes += Run-Step -Num ($i+1) -Desc $s.Desc -Reason $s.Reason -Action $s.Action -RequiresReboot:$reboot
         }
 
         Write-Host ""
         Write-Host "   -----------------------------------------------------------------------------" -ForegroundColor DarkGreen
-        Write-Done "All software diagnostic and repair steps have been executed."
+        Write-Info ("Steps returned: {0}; failed: {1}; skipped: {2}." -f @($outcomes | Where-Object Status -eq 'Completed').Count,@($outcomes | Where-Object Status -eq 'Failed').Count,@($outcomes | Where-Object Status -eq 'Skipped').Count)
         Write-Host ""
 
         $solved = Ask-Confirm "Did any of these software fixes resolve the issue?"
@@ -1272,13 +1192,14 @@ while ($true) {
         Write-Host ""
         Write-Host "   Running general diagnostic steps instead..." -ForegroundColor Green
 
+        $outcomes = @()
         for ($i = 0; $i -lt $FallbackSteps.Count; $i++) {
             $s = $FallbackSteps[$i]
-            Run-Step -Num ($i+1) -Desc $s.Desc -Reason $s.Reason -Action $s.Action
+            $outcomes += Run-Step -Num ($i+1) -Desc $s.Desc -Reason $s.Reason -Action $s.Action
         }
 
         Write-Host ""
-        Write-Done "General diagnostic steps complete."
+        Write-Info ("General steps returned: {0}; failed: {1}; skipped: {2}." -f @($outcomes | Where-Object Status -eq 'Completed').Count,@($outcomes | Where-Object Status -eq 'Failed').Count,@($outcomes | Where-Object Status -eq 'Skipped').Count)
         Write-Host ""
 
         $solved = Ask-Confirm "Did the general software steps resolve your problem?"

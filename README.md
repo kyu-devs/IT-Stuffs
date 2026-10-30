@@ -1,253 +1,151 @@
-# ONYX IT DEPARTMENT TECH TOOLS v1.1
+# ONYX IT DEPARTMENT TECH TOOLS / KyuTools
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Platform" />
-  <img src="https://img.shields.io/badge/Shell-Batch%20%2B%20PowerShell-5391FE?style=for-the-badge&logo=powershell&logoColor=white" alt="Shell" />
-  <img src="https://img.shields.io/badge/Version-v1.1-brightgreen?style=for-the-badge" alt="Version" />
-  <img src="https://img.shields.io/badge/Privileges-Administrator-red?style=for-the-badge" alt="Admin" />
-</p>
+A portable Windows helpdesk toolkit with 14 terminal menus for diagnostics,
+maintenance, licensed Windows/Office setup, printer support, and guided repairs.
+It uses Batch, Windows PowerShell 5.1, and built-in Windows tools.
 
-A modular, password-protected Command Prompt administrative and IT Helpdesk toolkit for Windows. **ONYX IT DEPARTMENT TECH TOOLS** consolidates system diagnostics, routine maintenance, performance tuning, network optimization, security auditing, and remote troubleshooting into a single terminal dashboard.
+The reliability update replaces consequential menu actions with checked
+PowerShell operations. A completed command is not proof that a PC problem is
+fixed: review its findings and retest the original symptom.
 
----
+## Run
 
-## Table of Contents
+1. Review the code and open `KyuTools.bat`. Accept UAC to perform administrative actions.
+2. Enter the local menu password, currently `kyu04`, defined in `modules/pass.ps1`.
+3. Choose a module. Actions with significant effects explain their scope and
+   require typing `YES`; cancelling retains the existing configuration.
 
-- [Overview](#overview)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Password Gate](#password-gate)
-- [Module Breakdown](#module-breakdown)
-  - [1. Windows Activation and License](#1-windows-activation-and-license)
-  - [2. Network and Internet Optimizer](#2-network-and-internet-optimizer)
-  - [3. System Maintenance and Diagnostics](#3-system-maintenance-and-diagnostics)
-  - [4. System Information Viewer](#4-system-information-viewer)
-  - [5. Privacy and Telemetry Control](#5-privacy-and-telemetry-control)
-  - [6. Performance Tweaks](#6-performance-tweaks)
-  - [7. File and Disk Utilities](#7-file-and-disk-utilities)
-  - [8. Printer and Device Sharing](#8-printer-and-device-sharing)
-  - [9. IT Helpdesk & Quick Fixes](#9-it-helpdesk--quick-fixes)
-  - [10. Remote Management & Access](#10-remote-management--access)
-  - [11. Security and Intrusion Audit](#11-security-and-intrusion-audit)
-  - [12. Windows All in One Utilities](#12-windows-all-in-one-utilities)
-  - [13. Account Recovery and Access Guide](#13-account-recovery-and-access-guide)
-  - [14. Custom Problem Solver & Hardware Diagnostics](#14-custom-problem-solver--hardware-diagnostics)
-- [Project Structure](#project-structure)
-- [Authors & Contributors](#authors--contributors)
-- [Disclaimer](#disclaimer)
+Windows 10/11 and Windows PowerShell 5.1 are the intended environment. Individual
+features depend on edition, installed Windows components, drivers, policies,
+permissions, connectivity, and device capabilities. Optional Windows features
+and services may be unavailable or disabled by an administrator.
 
----
+The password prompt is a convenience gate. The password is in source and modules
+can run directly. It is not an access-control boundary.
 
-## Overview
+## Modules
 
-ONYX IT DEPARTMENT TECH TOOLS was built to help technicians, system administrators, and power users troubleshoot and optimize Windows workstations without needing third-party GUI software installations. It runs directly via standard Windows scripting engines (`cmd.exe` and `powershell.exe`) with native command-line utilities.
+| Menu | Module | Current behavior |
+| --- | --- | --- |
+| 1 | Windows Activation and Offices | Verified Windows license status; validated licensed product keys; Office deployment, removal, and official activation help |
+| 2 | Network and Internet | DNS queries, adapter selection, backed-up DNS changes, checked resets, adapter IPv6 controls; firewall policy retained |
+| 3 | Maintenance | Checked SFC/DISM, update-cache renaming, bounded temporary-file cleanup, disk checks, exported Application/System event logs |
+| 4 | System Information | CPU/RAM/GPU/disk information; battery and timestamped system reports using the actual Desktop folder |
+| 5 | Privacy | Edition-dependent registry policies with exact prior-value backups and explicit restoration; hosts file and service configuration retained |
+| 6 | Performance | Checked power-plan activation, memory/process information, reversible UI/gaming preferences, temporary service comparison |
+| 7 | File and Disk | Focused large-file scans, SHA256 hashes, media-aware drive optimization, scoped ownership, links, and Explorer visibility |
+| 8 | Printer and Device Sharing | Host/client diagnostics, authenticated sharing, driver inventory, UNC connections, direct TCP/IP setup, spooler/queue tools, optional test pages |
+| 9 | IT Helpdesk | Checked boot changes, session Explorer restart, update repair, policy refresh, targeted app repair guidance |
+| 10 | Remote Management | Edition-aware RDP configuration with NLA, validated host input, remote consoles/shares, local network observation |
+| 11 | Security | Login/session/audit utilities, correct RDP authentication event channel, recent files, startup entries, Defender history |
+| 12 | All in One Utilities | Download WinUtil to a reviewable file, display its hash, review in Notepad, then explicitly choose execution |
+| 13 | Account Recovery | Official recovery guidance, actual local lockout-flag clearing, BitLocker/WinRE information, checked Robocopy backups |
+| 14 | Custom Problem Solver | Predefined keyword recipes, more specific matching, completed/failed/skipped step reporting, evidence-based escalation |
 
-### Key Highlights
-- **Self-Elevating Execution**: Verifies administrative permissions at startup and prompts UAC elevation automatically if required.
-- **Console Security Gate**: Masked, invisible password input protects unauthorized interactive usage.
-- **Modernized Windows 11 Support**: Replaces deprecated `wmic` calls with PowerShell CIM cmdlets (`Get-CimInstance`) for long-term compatibility.
-- **Zero Third-Party Dependencies**: Uses native Windows tools (`sfc`, `dism`, `netsh`, `ipconfig`, `slmgr`, `powercfg`, `wevtutil`, and PowerShell).
+## Printer workflow
 
----
+Start with **Diagnose and export report** on the affected PC. For a shared
+printer, check the host PC as well as the client.
 
-## Getting Started
+1. Confirm the printer itself works and the host is awake on the trusted LAN.
+2. On the host, use **Enable authenticated sharing**, selecting the correct
+   interface. It backs up profile/firewall/service state, configures Private or
+   Domain firewall rules, and starts permitted services. It does not change
+   domain network classification or enable disabled services behind policy.
+3. Use **Share a local printer** and record `\\HOST\SHARE`.
+4. On the client, use **Connect to a shared printer**. Query an explicit host or
+   cached neighbors, choose a discovered printer, or enter its full UNC path.
+5. If credentials are needed, authenticate through Windows/File Explorer using
+   a host or domain account and its password. A Windows Hello PIN is not a
+   network account password. The toolkit does not read or log network passwords.
+6. Install the exact approved signed driver as administrator when requested.
+   The correct model and x64/x86/ARM64 architecture matter.
+7. Confirm Windows enumerates the connection, then use **Optional physical test
+   page** to verify delivery. This action requires confirmation and uses paper.
 
-### Prerequisites
-- **Operating System**: Windows 10 or Windows 11 (64-bit recommended)
-- **Privileges**: Administrator rights
-- **Shell**: PowerShell 5.1 or later (pre-installed on Windows 10/11)
+Discovery can be blocked by firewall, RPC, credentials, VLANs, or device
+protocols. Failure to enumerate does not prove the printer is absent. A manual
+UNC path remains available. Identical share names on different hosts stay
+separate. An IPP/WSD device should be added through Windows printer settings;
+the direct TCP/IP option specifically requires RAW TCP 9100 and an installed
+compatible driver.
 
-### How to Run
-1. Clone or download this repository onto the target Windows computer.
-2. Right-click [`KyuTools.bat`](KyuTools.bat) and choose **Run as administrator** (or double-click; it will auto-request elevation).
-3. Enter the security gate password when prompted.
+Spooler restart retains queued jobs. **Clear stuck local queue** is separate and
+explicit: it removes pending `.SPL`/`.SHD` files from the standard local queue,
+then restores the spooler even if deletion fails. It does not delete driver
+packages. Custom global/per-printer spool directories are detected and refused;
+they need administrator inspection.
 
-### Password Gate
-Input characters are hidden from the console display during entry for security.
+Routine repairs retain SMB signing, RPC privacy, authenticated access, and
+administrator-only driver installation. They do not enable Guest, anonymous
+access, SMB1, or blanket Point and Print bypasses. Existing insecure settings
+from previous versions are reported where available; they are not silently
+reconfigured because organization policy may own them.
 
-- **Default Password**: `kyu04`
-- **Location**: Defined in [`modules/pass.ps1`](modules/pass.ps1) (line 27). You can customize the password string inside this file.
+Connections/default printers are associated with the executing Windows user.
+If UAC uses a different administrator account, add the printer in the intended
+user session too.
 
----
+## Windows and Office licensing
 
-## Module Breakdown
+Windows activation is checked using `SoftwareLicensingProduct` state after the
+activation request. Existing keys/KMS configuration are retained unless the user
+explicitly supplies a new valid-format key. A key's format does not establish
+that it is licensed or valid for the installed edition.
 
-### 1. Windows Activation and License
-Located in [`modules/activation.bat`](modules/activation.bat):
-- **Install Office (Word, Excel, PowerPoint, Outlook Only)**: Downloads official Microsoft Click-to-Run deployment tools directly from Microsoft CDN and installs only core productivity apps (Word, Excel, PowerPoint, Outlook), automatically excluding bloatware (Access, Publisher, OneNote, Teams, OneDrive, Skype/Lync). Supports Office 2021, Office 2024, or Microsoft 365.
-- **Office Scrubber & Deep Removal**: Deep-cleans and completely wipes residual Microsoft 365 / Office installations, Click-to-Run services, leftover trial licenses, vNext subscription tokens, and registry entries (powered by integrated `OfficeScrubber.cmd` from official Microsoft SaRA OffScrub scripts). Essential for cleanly downgrading or switching from Microsoft 365 to Office 2021 without license conflict errors.
-- **Activation Status Check**: Checks license expiration and grace periods via `slmgr.vbs /xpr` and `/dli`.
-- **License Type Identification**: Inspects Windows edition, build number, serial number, and license channel (Retail, OEM, Volume).
-- **Product Key Entry**: Installs product keys (`slmgr /ipk`) and attempts online activation (`slmgr /ato`).
-- **Office Permanent Activation**: Integrates Microsoft Activation Scripts (MAS) Ohook method for Microsoft Office (`irm https://get.activated.win | iex`).
-- **Trial Rearm**: Resets evaluation periods using `slmgr.vbs /rearm`.
-- **Intelligent Error Detection & Automated Fixes**: Automatically intercepts and explains activation error codes (such as `0xC004F074`, `0x8007007B`, `0xC004C003`, `0xC004F050`, or network/time sync issues) during key entry or status audits, prompting the technician before executing targeted automated remediation.
-- **Detailed Diagnostics**: Displays full license details via `slmgr.vbs /dlv`.
+Office deployment supports these licensed enterprise products:
 
-### 2. Network and Internet Optimizer
-Located in [`modules/network.bat`](modules/network.bat):
-- **Full Network Reset**: Executes a complete 7-step network stack overhaul:
-  1. DNS cache flush
-  2. IP release
-  3. Winsock catalog reset
-  4. TCP/IP stack reset
-  5. IPv4 and IPv6 stack reset
-  6. Windows Firewall policy reset
-  7. IP renewal via DHCP
-- **DNS Speed Benchmark**: Measures round-trip ping latency across Google (8.8.8.8), Cloudflare (1.1.1.1), Quad9 (9.9.9.9), and OpenDNS (208.67.222.222).
-- **DNS Server Switcher**: Quickly applies DNS presets (Google, Cloudflare, Quad9, OpenDNS, or custom IPs) directly to the active network interface.
-- **Protocol Management**: Enable or disable IPv6 components and Teredo tunneling.
-- **Connection Viewer & Speed Check**: Lists active listening and established sockets (`netstat`) and launches Speedtest by Ookla (`speedtest.net`).
+| Choice | Product | Channel |
+| --- | --- | --- |
+| 2021 | ProPlus2021Volume | PerpetualVL2021 |
+| 2024 | ProPlus2024Volume | PerpetualVL2024 |
+| 365 | O365ProPlusRetail | Current |
 
-### 3. System Maintenance and Diagnostics
-Located in [`modules/maintenance.bat`](modules/maintenance.bat):
-- **System File Integrity**: System File Checker (`sfc /scannow`).
-- **Deployment Image Servicing**: DISM image health checks (`/CheckHealth`, `/ScanHealth`) and online component repair (`/RestoreHealth`).
-- **Combined Repair**: Automated multi-stage repair pipeline running DISM repairs followed by an SFC scan.
-- **Junk & Cache Cleanup**: Clears user temp folders, `%windir%\Temp`, Prefetch files, Recent file shortcuts, and Google Chrome / Microsoft Edge browser caches.
-- **Windows Update Repair**: Stops update services, purges corrupted cache files in `SoftwareDistribution\Download` and `catroot2`, and restarts update services.
-- **Storage Diagnostics**: Disk S.M.A.R.T. health checks via `Win32_DiskDrive`, read-only `CHKDSK`, or scheduled full disk repairs on reboot.
-- **Memory Testing & Event Logs**: Schedules Windows Memory Diagnostics (`mdsched`), views the last 20 system error events, or wipes all Windows Event Logs.
+The installer must pass Microsoft Authenticode validation. Existing Click-to-Run
+architecture is respected; unsupported ARM64 deployment is handed off to the
+official installer. Word, Excel, PowerPoint and classic Outlook are included;
+other apps are excluded through deployment configuration. Existing MSI products
+are not removed automatically. Retail perpetual products need their matching
+installer and license. Installing Office does not activate or license it.
 
-### 4. System Information Viewer
-Located in [`modules/sysinfo.bat`](modules/sysinfo.bat):
-- **Hardware Inventory**: Queries detailed processor clock speeds and core counts, RAM physical sticks with vendor and frequency, GPU adapters and VRAM, and storage volumes.
-- **Battery Health**: Generates an HTML battery health and capacity history report (`powercfg /batteryreport`) saved to the Desktop.
-- **Processes & Autostart**: Displays active processes (`tasklist`) and queries registry Run keys (`HKCU` and `HKLM`) for startup applications.
-- **Consolidated Export**: Exports a full diagnostic system summary to `OnyxTools_Report.txt` on the current user's Desktop.
+Office activation guidance uses supported Microsoft account/subscription or
+organization KMS/MAK paths. Previous MAS/Ohook download-and-execute shortcuts and
+unverified permanent-activation claims have been replaced. The bundled third-party
+OfficeScrubber remains an explicitly confirmed interactive removal option.
 
-### 5. Privacy and Telemetry Control
-Located in [`modules/privacy.bat`](modules/privacy.bat):
-- **Disable Telemetry**: Disables `AllowTelemetry` group policies and disables background tracking services (`DiagTrack`, `dmwappushservice`).
-- **Disable Cortana & Web Search**: Prevents web searches from the Windows taskbar search box and disables Cortana policies.
-- **Advertising & Activity Tracking**: Disables Windows Advertising ID, Activity Feed / Timeline tracking, and location sensors.
-- **Hosts File Endpoint Blocker**: Appends known Microsoft telemetry collection hostnames directly to `C:\Windows\System32\drivers\etc\hosts` mapped to `0.0.0.0`.
-- **Default Restoration**: Reverts privacy and telemetry tweaks back to Windows default settings.
+## Reports, backups, and logs
 
-### 6. Performance Tweaks
-Located in [`modules/performance.bat`](modules/performance.bat):
-- **Power Schemes**: Unlocks and activates the High Performance power plan or the hidden Ultimate Performance power plan (`e9a42b02-d5df-448d-aa00-03f14749eb61`).
-- **UI Responsiveness**: Minimizes window animation delays and eliminates the default Windows startup delay.
-- **Memory Optimization**: Clears standby memory via .NET garbage collection routines.
-- **Background Service Tuning**: Disables Windows Search indexing and SysMain (Superfetch).
-- **Gaming Optimizations**: Disables Xbox Game Bar / Game DVR background recording, enables Windows Game Mode, and toggles Hardware-Accelerated GPU Scheduling (HAGS).
+- Reports use Windows' actual Desktop location, including redirection/OneDrive.
+- Checked-operation logs: `%LOCALAPPDATA%\KyuTools\Logs\YYYY-MM-DD.log`.
+- Configuration backups: `%LOCALAPPDATA%\KyuTools\Backups\<timestamp-id>\`.
+- Privacy/performance restoration accepts the exact `registry-settings.clixml`
+  file saved before a change. Printer sharing has its own restore action for
+  `printer-sharing.clixml`.
+- Network snapshots and permission descriptors are retained for administrator
+  review. They are not automatically equivalent to a full system restore point.
 
-### 7. File and Disk Utilities
-Located in [`modules/diskutils.bat`](modules/diskutils.bat):
-- **Disk Usage & Drive Breakdown**: Summarizes free space and capacity for all attached partitions.
-- **Heavy File Scanner**: Recursively scans all connected drives and lists the top 20 largest files with calculated sizes in megabytes.
-- **NTFS Permissions**: Takes ownership (`takeown`) and grants full permissions (`icacls`) to the current user for locked files or folders.
-- **Hidden Files Management**: Toggles visibility of hidden and protected operating system files in Windows Explorer, and recursively scans drives for hidden files.
-- **Checksum Verification**: Calculates cryptographic hashes (MD5, SHA1, SHA256) for any specified file using `certutil`.
-- **Symbolic Links & CBS Logs**: Creates directory or file symlinks (`mklink`), opens Disk Management (`diskmgmt.msc`), and reads the last 50 lines of `CBS.log`.
+Logs record action/exit status without native argument values. Keep reports and
+backups private: they can include usernames, device information, network details,
+and configuration. Review them before sharing.
 
-### 8. Printer and Device Sharing
-Located in [`modules/printer.bat`](modules/printer.bat):
-- **Enable File and Printer Sharing**: Sets network profile to Private, enables firewall rules, starts discovery services, disables password-protected sharing, and configures Windows 11 SMB guest policies.
-- **View Installed Printers & Drivers**: Lists all printers and installed driver architectures, with built-in utilities to launch the Windows Add Driver Wizard, purge corrupted Point & Print driver caches (`PCC`), or open the Print Server Properties GUI.
-- **Share an Installed Printer (Host PC)**: Shares a local printer with a custom share name and ensures guest/anonymous sharing permissions are configured.
-- **Connect to a Shared Printer (Client PCs)**: Automatically scans the network for open shared printers and WSD devices, runs driver pre-checks, connects without wasting paper on test prints, translates any connection or driver error into plain English, and includes an interactive Driver Repair Assistant.
-- **Restart Print Spooler Service**: Stops and restarts the Windows Print Spooler service (`spooler`) to clear stuck or unresponsive print queues.
+`launch.ps1` is an optional GitHub download bootstrapper. It uses a unique
+temporary directory, retains downloaded source for inspection, and requires
+confirmation before elevation. Downloading the current branch is not a pinned
+or independently authenticated release.
 
-### 9. IT Helpdesk & Quick Fixes
-Located in [`modules/ithelpdesk.bat`](modules/ithelpdesk.bat):
-- **Direct BIOS / UEFI Reboot**: Restarts the workstation directly into UEFI/BIOS firmware settings (`shutdown /r /fw /t 0`).
-- **Explorer Reload**: Terminates and restarts `explorer.exe` to recover from frozen taskbars and black screens.
-- **Group Policy Repair**: Deletes local cached Group Policy folders and forces an immediate policy refresh (`gpupdate /force`).
-- **Safe Mode Toggle**: Sets the boot configuration to minimal Safe Mode (`bcdedit /set {current} safeboot minimal`) or removes the flag to resume normal boot.
-- **Modern App Repair**: Re-registers all default Windows AppX packages and Start Menu applications.
+## Development and validation
 
-### 10. Remote Management & Access
-Located in [`modules/remote.bat`](modules/remote.bat):
-- **Remote Desktop Client**: Launches RDP (`mstsc.exe`) or Windows Quick Assist for end-user remote support.
-- **Host Configuration**: Enables incoming Remote Desktop connections on the local computer and configures firewall rules.
-- **Network Subnet Discovery**: ARP-based scanner that detects active devices on the local subnet, attempts reverse DNS hostname resolution, and checks logged-in usernames via ADSI and `quser`.
-- **Remote Administration**: Opens remote Computer Management consoles (`compmgmt.msc /computer:\\<target>`), administrative hidden shares (`\\<target>\c$`), and the remote shutdown GUI (`shutdown -i`).
+No additional packages are needed for the checks:
 
-### 11. Security and Intrusion Audit
-Located in [`modules/security.bat`](modules/security.bat) and [`modules/logon_audit.ps1`](modules/logon_audit.ps1):
-- **Active Connections with Process IDs**: Runs `netstat -anob` to identify listening and established sockets mapped to owning processes.
-- **Logon & Intrusion Audit Dashboard**:
-  - Failed Logon Attempts (Event ID 4625): Detects unauthorized login tries, brute-force attempts, and wrong passwords with target username, calling IP, workstation, and plain-English failure reasons.
-  - Active Logged-In Sessions: Identifies who is currently on the PC (interactive console users via `quser`, remote SMB network share users via `net session`, and active connections on ports 3389/445).
-  - Recent User Logons (Event ID 4624): Filtered table displaying actual human and remote logins without internal Windows background clutter.
-  - Account Lockout Tracking (Event ID 4740): Tracks locked-out accounts and the originating device.
-  - Windows Audit Policy Manager: 1-click verification and enablement of failure/success auditing via `auditpol`.
-  - Real-Time Live Logon Monitor: Live watcher that alerts on incoming login attempts as they happen.
-- **Recent Executable Scan**: Scans `C:\Users` and `C:\ProgramData` for `.exe`, `.bat`, `.ps1`, and `.vbs` files created or modified in the last 24 hours.
-- **USB Device Connection History**: Queries the `USBSTOR` registry keys to inspect previously connected USB storage devices.
-- **Autostart Audit**: Checks `Run` keys in `HKLM` and `HKCU` for suspicious persistence entries.
-- **Remote Desktop (RDP) History**: Queries TerminalServices logs for remote desktop connections (Event ID 1149).
-- **Defender Threats**: Displays recent Windows Defender threat detections via `Get-MpThreatDetection`.
-
-### 12. Windows All in One Utilities
-Located in [`modules/allinone.bat`](modules/allinone.bat):
-- Integrates the **Chris Titus Tech Windows Utility (WinUtil)**, an open-source toolbox providing automated program installations, debloat options, system tweaks, and Windows update configuration.
-- Executes with Administrator privileges in PowerShell:
-  ```powershell
-  powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://christitus.com/win | iex"
-  ```
-
-### 13. Account Recovery & Access Guide
-Located in [`modules/account_recovery.bat`](modules/account_recovery.bat):
-- **Diagnose Login Problems**: Multi-point diagnostic triage for forgotten passwords, PIN failures, account lockouts, profile errors, and boot failures.
-- **Microsoft Account Recovery**: Official recovery portals (`account.live.com/password/reset` and `acsr`), enterprise SSPR, and connectivity checks.
-- **Windows Hello PIN Recovery**: Hardware TPM and NGC cryptographic container diagnostics, sign-in options fallback, and convenience PIN policy checks.
-- **Local Account Recovery Guide**: Official Windows security questions, password reset disks, co-administrator recovery, and user account diagnostics via `net user`.
-- **Account Lockout Diagnostics**: Lockout thresholds, duration, observation window checks via `net accounts`, Security Event ID 4740 scanner, and safe authorized unlocking.
-- **BitLocker Recovery Assistant**: Read-only encryption status via `manage-bde`, cloud vault key locators, and WinPE recovery syntax.
-- **Offline Windows Installation Detection**: WinPE vs normal Windows environment detection, drive letter shifting compensation, and volume accessibility scanner.
-- **User Data Backup Assistant**: Non-destructive `robocopy` profile and library backup to external drives prior to OS repair.
-- **Windows Recovery Environment (WinRE) Guide**: `reagentc` status checker, advanced startup reboot launcher, and recovery utility guidance.
-
-### 14. Custom Problem Solver & Hardware Diagnostics
-Located in [`modules/troubleshoot.ps1`](modules/troubleshoot.ps1):
-- **Freeform Problem Matching**: State your problem in plain language (e.g., "monitor flickering", "pc slow", "no internet", "blue screen") to trigger tailored diagnostic and repair workflows.
-- **Interactive Stepwise Repairs**: Explains why each fix is recommended and asks before running each operation.
-- **Hardware Diagnostic Escalation**: When software repairs cannot solve the problem or when no software issue exists, automatically guides the technician through physical isolation checks.
-- **Physical Isolation Suite**: Dedicated hardware inspection routines for Monitor Flickering (OSD built-in menu test, cable inspection & swap, GPU port swapping, PCIe card reseating, and cross-testing on another PC), RAM faults, thermals/cooling, disk S.M.A.R.T. health, network cabling, and power delivery.
-- **Direct Hardware Menu**: Type `hw` or `hardware` directly from the problem prompt to inspect physical hardware checklists across all 11 categories without needing to run software steps first.
-
----
-
-## Project Structure
-
-```
-IT-Stuffs/
-├── KyuTools.bat            # Main entrypoint, admin elevation, and navigation menu
-├── fix_wmic.ps1            # Maintenance script updating deprecated WMIC calls to CIM
-├── README.md               # Project documentation and feature reference
-├── bin/
-│   └── OfficeScrubber.cmd  # Standalone Microsoft Office deep removal & licensing scrubber
-└── modules/
-    ├── pass.ps1            # Keystroke-masked password gate
-    ├── activation.bat      # Windows and Office activation utilities
-    ├── network.bat         # Network stack optimizer, DNS switcher, and latency checks
-    ├── maintenance.bat     # SFC, DISM, cache cleaners, CHKDSK, event log tools
-    ├── sysinfo.bat         # Hardware diagnostics and desktop report generator
-    ├── privacy.bat         # Telemetry, Cortana, and host blocking tools
-    ├── performance.bat     # Power plans, RAM flush, and gaming optimizations
-    ├── diskutils.bat       # Heavy file finder, ownership tools, and hash checker
-    ├── printer.bat         # Printer sharing, connection, and error fixes
-    ├── connect_printer.ps1 # Connect to shared printer and auto-repair engine
-    ├── ithelpdesk.bat      # UEFI reboot, explorer fixes, GPO reset, Safe Mode
-    ├── remote.bat          # RDP, hidden shares, subnet ARP scanner, remote MMC
-    ├── security.bat        # Security audit menu launcher
-    ├── logon_audit.ps1     # Failed login detector, active sessions, and live monitor
-    ├── allinone.bat        # Chris Titus Tech WinUtil launcher
-    ├── account_recovery.bat# Login triage, BitLocker assistant, backup, and WinRE guide
-    └── troubleshoot.ps1    # Custom problem solver & hardware diagnostic escalation suite
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tests\run.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tests\validate.ps1
 ```
 
----
+Tests isolate system mutations; they do not activate software, modify Windows
+settings, clear real queues, or print. They cannot establish physical printer
+compatibility or guarantee repairs on every PC. See [validation and manual
+acceptance](docs/VALIDATION.md), [project context](docs/PROJECT_CONTEXT.md), and
+[the implementation plan](docs/superpowers/plans/2026-10-30-toolkit-reliability.md).
 
-## Authors & Contributors
-
-- **Creator & Lead Developer**: [**Kyu**](https://github.com/mong-g) ([@mong-g](https://github.com/mong-g))
-- **Contributor**: [**themarneilx**](https://github.com/themarneilx) ([@themarneilx](https://github.com/themarneilx))
-
----
-
-## Disclaimer
-
-ONYX IT DEPARTMENT TECH TOOLS provides direct access to administrative Windows utilities, registry modifications, policy alterations, and network resets. Use these tools responsibly. Always test optimizations and registry changes in appropriate environments prior to deploying across production systems.
+Creator: Kyu (mong-g). Contributor: themarneilx.

@@ -33,18 +33,18 @@ echo.
 set "SI_CHOICE="
 set /p "SI_CHOICE=    >> Select option: "
 
-if /i "%SI_CHOICE%"=="1" goto SI_1
-if /i "%SI_CHOICE%"=="2" goto SI_2
-if /i "%SI_CHOICE%"=="3" goto SI_3
-if /i "%SI_CHOICE%"=="4" goto SI_4
-if /i "%SI_CHOICE%"=="5" goto SI_5
-if /i "%SI_CHOICE%"=="6" goto SI_6
-if /i "%SI_CHOICE%"=="7" goto SI_7
-if /i "%SI_CHOICE%"=="8" goto SI_8
-if /i "%SI_CHOICE%"=="9" goto SI_9
-if /i "%SI_CHOICE%"=="10" goto SI_10
-if /i "%SI_CHOICE%"=="A" goto SI_10
-if "%SI_CHOICE%"=="0" goto :EOF
+if /i "!SI_CHOICE!"=="1" goto SI_1
+if /i "!SI_CHOICE!"=="2" goto SI_2
+if /i "!SI_CHOICE!"=="3" goto SI_3
+if /i "!SI_CHOICE!"=="4" goto SI_4
+if /i "!SI_CHOICE!"=="5" goto SI_5
+if /i "!SI_CHOICE!"=="6" goto SI_6
+if /i "!SI_CHOICE!"=="7" goto SI_7
+if /i "!SI_CHOICE!"=="8" goto SI_8
+if /i "!SI_CHOICE!"=="9" goto SI_9
+if /i "!SI_CHOICE!"=="10" goto SI_10
+if /i "!SI_CHOICE!"=="A" goto SI_10
+if "!SI_CHOICE!"=="0" goto :EOF
 goto SYSINFO_MENU
 
 :SI_1
@@ -54,10 +54,10 @@ echo   +------------------------------------------------------------------------
 echo   ^|   System Overview                                                                             ^|
 echo   +------------------------------------------------------------------------------------------------+
 echo.
-systeminfo | findstr /i "Host\|OS\|Version\|Manufacturer\|Model\|Memory\|Processor\|Boot"
+systeminfo | findstr /i "Host OS Version Manufacturer Model Memory Processor Boot"
 echo.
 echo   [ Network ]
-ipconfig | findstr /i "IPv4\|Gateway"
+ipconfig | findstr /i "IPv4 Gateway"
 echo.
 pause
 goto SYSINFO_MENU
@@ -117,21 +117,8 @@ pause
 goto SYSINFO_MENU
 
 :SI_6
-cls
-echo.
-echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Battery Status                                                                              ^|
-echo   +------------------------------------------------------------------------------------------------+
-echo.
-powercfg /batteryreport /output "%USERPROFILE%\Desktop\BatteryReport.html" >nul 2>&1
-if exist "%USERPROFILE%\Desktop\BatteryReport.html" (
-    echo   [+] Battery report generated on your Desktop.
-    start "" "%USERPROFILE%\Desktop\BatteryReport.html"
-) else (
-    echo   [!] No battery found or no sensor available.
-)
-powershell -NoProfile -Command "Get-CimInstance Win32_Battery -ErrorAction SilentlyContinue | Format-List Name,EstimatedChargeRemaining,BatteryStatus"
-echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action BatteryReport
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
 pause
 goto SYSINFO_MENU
 
@@ -176,30 +163,13 @@ pause
 goto SYSINFO_MENU
 
 :SI_10
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action SystemReport
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
+pause
+goto SYSINFO_MENU
+
 :SI_A
-cls
-echo.
-echo   +------------------------------------------------------------------------------------------------+
-echo   ^|   Export Full System Report to Desktop                                                        ^|
-echo   +------------------------------------------------------------------------------------------------+
-echo.
-set "REPORT=%USERPROFILE%\Desktop\OnyxTools_Report.txt"
-echo ONYX IT DEPARTMENT TECH TOOLS System Report            > "%REPORT%"
-echo Generated: %date% %time%                         >> "%REPORT%"
-echo =================================================  >> "%REPORT%"
-systeminfo                                             >> "%REPORT%"
-echo =[ CPU ]=========================================  >> "%REPORT%"
-powershell -NoProfile -Command "Get-CimInstance Win32_Processor | Format-List Name,NumberOfCores,MaxClockSpeed" >> "%REPORT%"
-echo =[ RAM ]=========================================  >> "%REPORT%"
-powershell -NoProfile -Command "Get-CimInstance Win32_PhysicalMemory | Format-List BankLabel,Capacity,Speed" >> "%REPORT%"
-echo =[ GPU ]=========================================  >> "%REPORT%"
-powershell -NoProfile -Command "Get-CimInstance Win32_VideoController | Format-List Name,AdapterRAM" >> "%REPORT%"
-echo =[ DISK ]========================================  >> "%REPORT%"
-powershell -NoProfile -Command "Get-CimInstance Win32_DiskDrive | Format-List Model,Size,Status" >> "%REPORT%"
-echo =[ NETWORK ]=====================================  >> "%REPORT%"
-ipconfig /all                                          >> "%REPORT%"
-echo.
-echo   [+] Report saved to Desktop: OnyxTools_Report.txt
-echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0system_tools.ps1" -Action SystemReport
+if errorlevel 1 echo   [-] Action failed. Review the error above before retrying.
 pause
 goto SYSINFO_MENU
